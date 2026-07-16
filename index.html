@@ -357,5 +357,213 @@ function renderGrid(section, artworks) {
   }, 500);
 }
 </script>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- VIRTUELLE GALERISTIN                                       -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<style>
+#galeristin-widget { position:fixed; bottom:1.5rem; right:1.5rem; z-index:500; display:flex; flex-direction:column; align-items:flex-end; }
+#galeristin-avatar { width:72px; height:72px; cursor:pointer; transition:transform .2s; filter:drop-shadow(0 4px 12px rgba(0,0,0,.5)); }
+#galeristin-avatar:hover { transform:scale(1.05); }
+#chat-bubble { background:#111; border:1px solid #c8a96e; border-radius:12px 12px 2px 12px; padding:1rem 1.2rem; max-width:300px; margin-bottom:.75rem; display:none; box-shadow:0 8px 32px rgba(0,0,0,.6); }
+#chat-bubble.visible { display:block; animation:fadeSlideUp .25s ease; }
+@keyframes fadeSlideUp { from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)} }
+#chat-messages { max-height:280px; overflow-y:auto; scroll-behavior:smooth; }
+#chat-messages::-webkit-scrollbar { width:4px; }
+#chat-messages::-webkit-scrollbar-track { background:transparent; }
+#chat-messages::-webkit-scrollbar-thumb { background:#444; border-radius:2px; }
+.cm { margin-bottom:.6rem; font-size:.85rem; line-height:1.5; }
+.cm.bot { color:#e8e0d0; }
+.cm.user { color:#c8a96e; text-align:right; font-style:italic; }
+.cm .bot-name { font-size:.7rem; color:#c8a96e; margin-bottom:.15rem; letter-spacing:.04em; }
+.chat-options { display:flex; flex-wrap:wrap; gap:.4rem; margin-top:.75rem; }
+.chat-opt { background:transparent; border:1px solid #c8a96e44; color:#c8a96e; border-radius:99px; padding:.25rem .75rem; font-size:.75rem; cursor:pointer; transition:all .2s; font-family:inherit; }
+.chat-opt:hover { background:#c8a96e22; border-color:#c8a96e; }
+#chat-input-row { display:flex; gap:.4rem; margin-top:.75rem; border-top:1px solid #333; padding-top:.75rem; }
+#chat-user-input { flex:1; background:#1a1a1a; border:1px solid #333; color:#e8e0d0; border-radius:4px; padding:.4rem .7rem; font-size:.82rem; font-family:inherit; }
+#chat-user-input:focus { outline:none; border-color:#c8a96e; }
+#chat-send { background:#c8a96e; color:#000; border:none; border-radius:4px; padding:.4rem .8rem; cursor:pointer; font-size:.8rem; }
+.gal-badge { position:absolute; top:-4px; right:-4px; background:#c8a96e; color:#000; border-radius:99px; width:18px; height:18px; font-size:.65rem; display:flex; align-items:center; justify-content:center; font-weight:700; }
+#galeristin-avatar-wrap { position:relative; }
+</style>
+
+<div id="galeristin-widget">
+  <div id="chat-bubble">
+    <div id="chat-messages"></div>
+    <div class="chat-options" id="chat-options"></div>
+    <div id="chat-input-row">
+      <input type="text" id="chat-user-input" placeholder="Ihre Frage · Your question…" onkeydown="if(event.key==='Enter')sendUserMsg()">
+      <button id="chat-send" onclick="sendUserMsg()">→</button>
+    </div>
+  </div>
+  <div id="galeristin-avatar-wrap" onclick="toggleChat()">
+    <svg id="galeristin-avatar" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+      <!-- Background circle -->
+      <circle cx="36" cy="36" r="36" fill="#1a1a1a"/>
+      <circle cx="36" cy="36" r="35" fill="none" stroke="#c8a96e" stroke-width="1.5"/>
+      <!-- Body / dress (elegant dark) -->
+      <ellipse cx="36" cy="58" rx="16" ry="12" fill="#2a2010"/>
+      <path d="M22 52 Q36 62 50 52 L48 70 H24 Z" fill="#3a2e14"/>
+      <!-- Neck -->
+      <rect x="33" y="36" width="6" height="8" rx="2" fill="#c8a070"/>
+      <!-- Head -->
+      <ellipse cx="36" cy="28" rx="11" ry="13" fill="#c8a070"/>
+      <!-- Hair (elegant updo) -->
+      <ellipse cx="36" cy="17" rx="11" ry="6" fill="#2a1a0a"/>
+      <ellipse cx="36" cy="15" rx="8" ry="4" fill="#3a2510"/>
+      <!-- Bun -->
+      <circle cx="36" cy="13" r="5" fill="#2a1a0a"/>
+      <!-- Eyes -->
+      <ellipse cx="31" cy="27" rx="2" ry="2.5" fill="#1a0a00"/>
+      <ellipse cx="41" cy="27" rx="2" ry="2.5" fill="#1a0a00"/>
+      <circle cx="31.7" cy="26.2" r=".7" fill="#fff"/>
+      <circle cx="41.7" cy="26.2" r=".7" fill="#fff"/>
+      <!-- Brow -->
+      <path d="M29 24 Q31 23 33 24" stroke="#2a1a0a" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <path d="M39 24 Q41 23 43 24" stroke="#2a1a0a" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <!-- Smile -->
+      <path d="M32 32 Q36 35 40 32" stroke="#8a4a20" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+      <!-- Necklace (pearl) -->
+      <circle cx="30" cy="40" r="1.2" fill="#e8e0d0"/>
+      <circle cx="33.5" cy="38.5" r="1.2" fill="#e8e0d0"/>
+      <circle cx="36" cy="38" r="1.2" fill="#e8e0d0"/>
+      <circle cx="38.5" cy="38.5" r="1.2" fill="#e8e0d0"/>
+      <circle cx="42" cy="40" r="1.2" fill="#e8e0d0"/>
+      <!-- Earrings -->
+      <circle cx="25" cy="30" r="1.8" fill="#c8a96e"/>
+      <circle cx="47" cy="30" r="1.8" fill="#c8a96e"/>
+    </svg>
+    <div class="gal-badge" id="chat-notif" style="display:none">1</div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// VIRTUELLE GALERISTIN — FAQ CHATBOT
+// ══════════════════════════════════════════════════════
+const GALERISTIN_NAME = 'Elena';
+let chatOpen = false;
+let chatStarted = false;
+
+const FAQ = [
+  {
+    q: 'Über die Galerie',
+    en: 'About the Gallery',
+    a: 'Diese Galerie zeigt Werke von Jens Piegsa — Kunst an der Schnittstelle von Zeichnung und Code, von DDR-Kindheit und digitalem Zeitalter. Jedes Werk ist einzigartig und handgemacht.\n\n<em>This gallery features works by Jens Piegsa — art at the intersection of drawing and code.</em>'
+  },
+  {
+    q: 'Preise & Verkauf',
+    en: 'Prices & Purchase',
+    a: 'Werke sind als **Original** oder **Reproduktion (Druck)** erhältlich. Preise ab ~€89 (Reproduktion) bis über €500 (Original). PayPal-Zahlung direkt auf der Website. Für Originale gerne anfragen!\n\n📧 piegsa+art@gmail.com'
+  },
+  {
+    q: 'Originale & Reproduktionen',
+    en: 'Originals & Prints',
+    a: '**Originale** sind Einzelstücke — handsigniert, mit Echtheitszertifikat. **Reproduktionen** sind hochwertige Giclée-Drucke auf Kunstdruck-Papier, ebenfalls signiert und nummeriert.\n\nBei Interesse einfach anfragen!'
+  },
+  {
+    q: 'Reservierung',
+    en: 'How to Reserve',
+    a: 'Sie können ein Werk **reservieren** lassen — senden Sie einfach eine E-Mail mit dem Werktitel. Reservierungen gelten 7 Tage.\n\n📧 piegsa+art@gmail.com\n\nBereits reservierte Werke sind mit 🔖 markiert.'
+  },
+  {
+    q: 'Versand & Lieferung',
+    en: 'Shipping',
+    a: 'Versand weltweit. Originale werden professionell verpackt und versichert. Reproduktionen kommen gerollt in Kartonröhre. Lieferzeit: 3–14 Werktage je nach Zielland.\n\n<em>Worldwide shipping available.</em>'
+  },
+  {
+    q: 'Über den Künstler',
+    en: 'About the Artist',
+    a: 'Jens Piegsa wurde in der DDR geboren, wuchs in Ostdeutschland auf und verbindet in seiner Kunst technisches Denken mit bildnerischem Handwerk. Studium der Computervisualistik, 2-jähriges Fernstudium Werbegrafik.\n\n🌐 info.jens-piegsa.com'
+  },
+  {
+    q: 'Kontakt',
+    en: 'Contact',
+    a: '📧 piegsa+art@gmail.com\n🌐 gallery.jens-piegsa.com\n\nFür Anfragen zu Werken, Ausstellungen, Kooperationen oder Presse — ich freue mich!\n\n<em>For inquiries about artworks, exhibitions, or collaborations — happy to hear from you!</em>'
+  }
+];
+
+function toggleChat() {
+  chatOpen = !chatOpen;
+  const bubble = document.getElementById('chat-bubble');
+  bubble.classList.toggle('visible', chatOpen);
+  document.getElementById('chat-notif').style.display = 'none';
+  if (chatOpen && !chatStarted) { chatStarted = true; initChat(); }
+}
+
+function initChat() {
+  addBotMsg(`Guten Tag! Ich bin **${GALERISTIN_NAME}**, Ihre virtuelle Galeristin. 🎨\n\n*Good day! I'm ${GALERISTIN_NAME}, your virtual gallery guide.*\n\nWie kann ich Ihnen helfen?`);
+  showOptions(FAQ.map(f => f.q));
+}
+
+function addBotMsg(text) {
+  const msgs = document.getElementById('chat-messages');
+  const html = text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>').replace(/\n/g,'<br>');
+  msgs.innerHTML += `<div class="cm bot"><div class="bot-name">✦ ${GALERISTIN_NAME}</div>${html}</div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+}
+function addUserMsg(text) {
+  const msgs = document.getElementById('chat-messages');
+  msgs.innerHTML += `<div class="cm user">${text}</div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+}
+function showOptions(opts) {
+  const el = document.getElementById('chat-options');
+  el.innerHTML = opts.map(o => `<button class="chat-opt" onclick="pickOption('${o}')">${o}</button>`).join('') +
+    '<button class="chat-opt" onclick="pickOption(\'E-Mail senden\')">📧 E-Mail</button>' +
+    '<button class="chat-opt" onclick="pickOption(\'Zurück\')" style="opacity:.6">↩ Zurück</button>';
+}
+function pickOption(opt) {
+  document.getElementById('chat-options').innerHTML = '';
+  if (opt === 'Zurück') { addBotMsg('Wie kann ich Ihnen noch helfen?'); showOptions(FAQ.map(f=>f.q)); return; }
+  if (opt === 'E-Mail senden') {
+    addUserMsg('E-Mail schreiben'); 
+    addBotMsg('Sehr gerne! Klicken Sie hier um eine E-Mail zu senden:\n\n📧 <a href="mailto:piegsa+art@gmail.com?subject=Anfrage Galerie" style="color:#c8a96e">piegsa+art@gmail.com</a>\n\nIch antworte in der Regel innerhalb von 24 Stunden.');
+    showOptions(['Zurück']); return;
+  }
+  const faq = FAQ.find(f=>f.q===opt||f.en===opt);
+  if (faq) { addUserMsg(opt); setTimeout(()=>{ addBotMsg(faq.a); showOptions(['Zurück']); }, 300); }
+}
+
+function sendUserMsg() {
+  const input = document.getElementById('chat-user-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  addUserMsg(msg);
+  document.getElementById('chat-options').innerHTML = '';
+  
+  // Simple keyword matching
+  const ml = msg.toLowerCase();
+  const matched = FAQ.find(f => 
+    ml.includes(f.q.toLowerCase().split(' ')[0]) ||
+    (f.en && ml.includes(f.en.toLowerCase().split(' ')[0])) ||
+    ml.includes('preis') || ml.includes('price') ||
+    (f.q==='Preise & Verkauf' && (ml.includes('kauf')||ml.includes('buy')||ml.includes('kosten')||ml.includes('cost'))) ||
+    (f.q==='Versand & Lieferung' && (ml.includes('versand')||ml.includes('ship')||ml.includes('liefer'))) ||
+    (f.q==='Über den Künstler' && (ml.includes('artist')||ml.includes('künstler')||ml.includes('jens')||ml.includes('wer')||ml.includes('who'))) ||
+    (f.q==='Kontakt' && (ml.includes('kontakt')||ml.includes('contact')||ml.includes('email')||ml.includes('mail'))) ||
+    (f.q==='Reservierung' && (ml.includes('reserv')||ml.includes('book')||ml.includes('hold')))
+  );
+  
+  setTimeout(() => {
+    if (matched) {
+      addBotMsg(matched.a);
+      showOptions(['Zurück']);
+    } else {
+      addBotMsg('Das kann ich gerne weiterleiten! Für detaillierte Anfragen:\n\n📧 <a href="mailto:piegsa+art@gmail.com?subject=Anfrage: '+encodeURIComponent(msg)+'" style="color:#c8a96e">piegsa+art@gmail.com</a>');
+      showOptions(['Zurück']);
+    }
+  }, 400);
+}
+
+// Show notification after 3s
+setTimeout(() => {
+  if (!chatOpen) {
+    document.getElementById('chat-notif').style.display='flex';
+  }
+}, 3000);
+</script>
+
 </body>
 </html>
