@@ -2,449 +2,641 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin · Jens Piegsa Galerie</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Admin — Jens Piegsa Galerie</title>
 <style>
-:root{--bg:#0a0a0a;--bg2:#111;--accent:#c8a96e;--text:#e8e0d0;--muted:#888;--border:#333;--card:#1a1a1a;--green:#2d6a2d;--red:#6a1a1a;}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--text);font-family:'Georgia',serif;min-height:100vh;padding:2rem;}
-h1{color:var(--accent);font-weight:300;font-size:2rem;margin-bottom:.5rem;}
-.subtitle{color:var(--muted);margin-bottom:2rem;font-size:.9rem;}
-#login-screen,#app{max-width:1100px;margin:0 auto;}
-input,select,textarea{width:100%;padding:.65rem .9rem;background:#1e1e1e;border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:.9rem;font-family:inherit;margin-bottom:.6rem;}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);}
-textarea{min-height:70px;resize:vertical;}
-.btn{padding:.6rem 1.4rem;border:none;border-radius:4px;cursor:pointer;font-size:.85rem;font-family:inherit;letter-spacing:.04em;transition:all .2s;}
-.btn-primary{background:var(--accent);color:#000;}
-.btn-primary:hover{background:#a88940;}
-.btn-danger{background:#c00;color:#fff;}
-.btn-danger:hover{background:#a00;}
-.btn-secondary{background:transparent;border:1px solid var(--border);color:var(--muted);}
-.btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
-/* Login */
-#login-screen{max-width:380px;padding-top:10vh;}
-#login-screen h2{color:var(--accent);font-weight:300;font-size:1.4rem;margin-bottom:1.5rem;}
-.err{color:#ff6b6b;font-size:.82rem;margin-top:.4rem;display:none;}
-/* App layout */
-#app{display:none;}
-.tabs{display:flex;gap:.5rem;margin-bottom:2rem;flex-wrap:wrap;}
-.tab{padding:.5rem 1.2rem;border:1px solid var(--border);border-radius:4px;cursor:pointer;font-size:.85rem;color:var(--muted);background:transparent;}
-.tab.active{border-color:var(--accent);color:var(--accent);}
-.tab-content{display:none;}
-.tab-content.active{display:block;}
-/* Artwork editor */
-.artwork-editor-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
-@media(max-width:700px){.artwork-editor-grid{grid-template-columns:1fr;}}
-.card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin-bottom:1rem;}
-.card h3{color:var(--accent);font-weight:300;font-size:1.1rem;margin-bottom:1rem;}
-label{font-size:.78rem;color:var(--muted);display:block;margin-bottom:.2rem;letter-spacing:.04em;text-transform:uppercase;}
-.row{display:flex;gap:.75rem;align-items:center;}
-.row input{margin-bottom:0;}
-.switch-group{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.6rem;}
-.switch-btn{padding:.35rem .85rem;border:1px solid var(--border);border-radius:99px;font-size:.78rem;cursor:pointer;background:transparent;color:var(--muted);}
-.switch-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(200,169,110,.1);}
-/* Artwork list */
-.artwork-list-item{display:flex;align-items:center;gap:1rem;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:.9rem 1rem;margin-bottom:.6rem;}
-.artwork-list-item img{width:60px;height:50px;object-fit:cover;border-radius:3px;background:#222;}
-.artwork-list-item .info{flex:1;}
-.artwork-list-item .info strong{color:var(--accent);}
-.artwork-list-item .info small{color:var(--muted);display:block;font-size:.78rem;}
-.badge-reserved{background:#c00;color:#fff;font-size:.65rem;padding:.15rem .5rem;border-radius:3px;margin-left:.4rem;}
-.badge-type{background:#333;color:var(--muted);font-size:.65rem;padding:.15rem .5rem;border-radius:3px;margin-left:.3rem;}
-/* Upload */
-.upload-zone{border:2px dashed var(--border);border-radius:8px;padding:3rem;text-align:center;cursor:pointer;transition:border-color .2s;}
-.upload-zone:hover{border-color:var(--accent);}
-.upload-zone input[type=file]{display:none;}
-.upload-zone .icon{font-size:2.5rem;margin-bottom:.75rem;}
-.upload-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.75rem;margin-top:1.5rem;}
-.upload-preview .prev-item{position:relative;}
-.upload-preview img{width:100%;height:100px;object-fit:cover;border-radius:4px;border:1px solid var(--border);}
-.upload-preview .prev-name{font-size:.7rem;color:var(--muted);margin-top:.25rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.upload-progress{background:var(--border);border-radius:2px;height:4px;margin-top:.4rem;}
-.upload-progress-bar{background:var(--accent);height:100%;border-radius:2px;width:0;transition:width .3s;}
-.status-msg{padding:.75rem 1rem;border-radius:4px;font-size:.85rem;margin-top:.75rem;display:none;}
-.status-msg.success{background:var(--green);border:1px solid #3d8a3d;color:#b5ffb5;}
-.status-msg.error{background:var(--red);border:1px solid #8a1a1a;color:#ffb5b5;}
-/* Settings */
-.pw-section{margin-bottom:2rem;}
-.pw-section h3{color:var(--accent);font-weight:300;margin-bottom:1rem;}
-.hash-display{background:#1e1e1e;border:1px solid var(--border);border-radius:4px;padding:.6rem .9rem;font-size:.75rem;color:var(--muted);word-break:break-all;font-family:monospace;}
+:root{
+  --bg:#080808;--bg2:#0f0f0f;--bg3:#161616;--card:#111;
+  --accent:#c8a96e;--accent2:#8b6914;
+  --text:#ede5d4;--muted:#7a7265;
+  --border:#242424;--border2:#2e2e2e;
+  --green:#4caf50;--red:#f44336;--blue:#64b5f6;
+  --radius:10px;--ease:cubic-bezier(.25,.46,.45,.94);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Inter','Segoe UI',sans-serif;font-size:.9rem;min-height:100vh}
+h1{font-family:Georgia,serif;color:var(--accent);font-size:1.6rem;font-weight:300;letter-spacing:.1em}
+h2{font-family:Georgia,serif;color:var(--accent);font-size:1.1rem;font-weight:300;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+#login-screen,#app{padding:2rem;max-width:960px;margin:0 auto}
+#app{display:none}
+
+/* LOGIN */
+.login-box{max-width:380px;margin:4rem auto;background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:2.5rem}
+.login-box h1{text-align:center;margin-bottom:2rem}
+input,select,textarea{width:100%;padding:.7rem 1rem;background:rgba(255,255,255,.04);border:1px solid var(--border2);color:var(--text);border-radius:var(--radius);font-size:.88rem;font-family:inherit;transition:border-color .2s;margin-bottom:.75rem}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+select option{background:var(--bg2)}
+textarea{resize:vertical;min-height:80px}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.4rem;border:none;border-radius:99px;cursor:pointer;font-size:.82rem;font-family:inherit;font-weight:500;letter-spacing:.04em;transition:all .2s var(--ease)}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000}
+.btn-primary:hover{filter:brightness(1.1);transform:scale(1.02)}
+.btn-secondary{background:rgba(255,255,255,.07);color:var(--text);border:1px solid var(--border2)}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+.btn-danger{background:rgba(244,67,54,.12);color:var(--red);border:1px solid rgba(244,67,54,.3)}
+.btn-sm{padding:.35rem .9rem;font-size:.75rem}
+.btn-translate{background:rgba(100,181,246,.1);color:var(--blue);border:1px solid rgba(100,181,246,.3)}
+.btn-translate:hover{background:rgba(100,181,246,.2)}
+.btn-translate:disabled{opacity:.4;cursor:default}
+
+/* TOP BAR */
+.topbar{display:flex;justify-content:space-between;align-items:center;padding-bottom:1.5rem;border-bottom:1px solid var(--border);margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
+.status{font-size:.75rem;color:var(--muted)}
+.status.ok::before{content:'● ';color:var(--green)}
+.status.err::before{content:'● ';color:var(--red)}
+
+/* TABS */
+.tabs{display:flex;gap:.5rem;margin-bottom:2rem;border-bottom:1px solid var(--border);padding-bottom:0}
+.tab{padding:.6rem 1.2rem;cursor:pointer;color:var(--muted);font-size:.82rem;border-bottom:2px solid transparent;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit}
+.tab.active,.tab:hover{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-panel{display:none}.tab-panel.active{display:block}
+
+/* FORM CARD */
+.form-card{background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:1.8rem;margin-bottom:1.5rem}
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.75rem;margin-bottom:.75rem}
+.form-group{display:flex;flex-direction:column;gap:.3rem}
+.form-group label{font-size:.72rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.form-group input,.form-group select,.form-group textarea{margin-bottom:0}
+
+/* IMAGE UPLOAD */
+.img-drop{border:2px dashed var(--border2);border-radius:var(--radius);padding:2rem;text-align:center;cursor:pointer;transition:border-color .2s;color:var(--muted);font-size:.85rem}
+.img-drop:hover,.img-drop.drag-over{border-color:var(--accent);color:var(--accent)}
+.img-preview{width:100%;max-height:280px;object-fit:contain;border-radius:var(--radius);margin-top:.75rem;display:none;border:1px solid var(--border)}
+
+/* TRANSLATION TABLE */
+.trans-table{width:100%;border-collapse:collapse;margin-top:.75rem;font-size:.82rem}
+.trans-table th{background:var(--bg3);color:var(--muted);padding:.5rem .7rem;text-align:left;font-weight:500;font-size:.72rem;letter-spacing:.06em}
+.trans-table td{padding:.35rem .5rem;border-bottom:1px solid var(--border)}
+.trans-table td:first-child{width:40px;color:var(--muted);font-size:.72rem;font-weight:600}
+.trans-table input{margin-bottom:0;padding:.4rem .6rem;font-size:.8rem}
+.trans-status{font-size:.65rem;padding:.15rem .5rem;border-radius:99px;display:inline-block}
+.trans-status.done{background:rgba(76,175,80,.15);color:#81c784}
+.trans-status.pending{background:rgba(255,167,38,.1);color:#ffb74d}
+.trans-status.err{background:rgba(244,67,54,.1);color:#e57373}
+
+/* ARTWORK LIST */
+.artwork-list{display:flex;flex-direction:column;gap:.75rem}
+.artwork-item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.2rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.artwork-item img{width:60px;height:60px;object-fit:cover;border-radius:6px;border:1px solid var(--border);flex-shrink:0}
+.artwork-item .info{flex:1;min-width:0}
+.artwork-item .info h4{color:var(--accent);font-size:.9rem;margin-bottom:.2rem;font-family:Georgia,serif}
+.artwork-item .info .meta{color:var(--muted);font-size:.75rem}
+.artwork-item .actions{display:flex;gap:.5rem;flex-shrink:0}
+.badge-cat{font-size:.65rem;padding:.1rem .5rem;border-radius:99px;font-weight:600;letter-spacing:.06em}
+.cat-free{background:rgba(144,238,144,.12);color:#90ee90}
+.cat-premium{background:rgba(255,215,0,.1);color:#ffd700}
+.cat-age13{background:rgba(255,152,0,.1);color:#ffa726}
+.cat-age18{background:rgba(244,67,54,.1);color:#ef5350}
+
+/* TOGGLE */
+.toggle-row{display:flex;align-items:center;gap:.6rem;margin-top:.4rem}
+.toggle{position:relative;width:40px;height:22px;cursor:pointer;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-slider{position:absolute;inset:0;background:var(--border2);border-radius:11px;transition:.3s}
+.toggle-slider::before{content:'';position:absolute;left:3px;top:3px;width:16px;height:16px;background:#555;border-radius:50%;transition:.3s}
+.toggle input:checked+.toggle-slider{background:var(--accent)}
+.toggle input:checked+.toggle-slider::before{background:#000;transform:translateX(18px)}
+.toggle-label{font-size:.8rem;color:var(--muted)}
+
+/* STATUS BAR */
+#status-bar{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--border2);border-radius:99px;padding:.5rem 1.5rem;font-size:.8rem;color:var(--text);display:none;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,.5);min-width:200px;text-align:center}
+#status-bar.show{display:block;animation:pop .2s ease}
+@keyframes pop{from{opacity:0;transform:translateX(-50%) scale(.95)}to{opacity:1;transform:translateX(-50%) scale(1)}}
+
+/* SECTION COLORS */
+.section-free{border-left:3px solid #90ee90}
+.section-premium{border-left:3px solid #ffd700}
+.section-age13{border-left:3px solid #ffa726}
+.section-age18{border-left:3px solid #ef5350}
+
+/* TOKEN */
+.token-row{display:flex;gap:.5rem;margin-bottom:.75rem}
+.token-row input{font-family:monospace;font-size:.8rem}
 </style>
 </head>
 <body>
 
-<!-- Login -->
+<!-- LOGIN SCREEN -->
 <div id="login-screen">
-  <h1>⚙ Admin</h1>
-  <h2>Jens Piegsa Galerie</h2>
-  <input type="password" id="admin-pw" placeholder="Admin-Passwort" onkeydown="if(event.key==='Enter')doLogin()">
-  <button class="btn btn-primary" style="width:100%" onclick="doLogin()">Anmelden</button>
-  <p class="err" id="login-err">Falsches Passwort</p>
+  <div class="login-box">
+    <h1>🔐 Admin</h1>
+    <p style="color:var(--muted);text-align:center;margin-bottom:1.5rem;font-size:.85rem">Jens Piegsa — Galerie-Verwaltung</p>
+    <input type="password" id="admin-pw" placeholder="Admin-Passwort" onkeydown="if(event.key==='Enter')login()">
+    <div class="token-row">
+      <input type="password" id="gh-token" placeholder="GitHub Token" value="">
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="login()">🔓 Anmelden</button>
+    <p id="login-err" style="color:#f44336;font-size:.8rem;margin-top:.75rem;display:none"></p>
+  </div>
 </div>
 
-<!-- App -->
+<!-- ADMIN APP -->
 <div id="app">
-  <h1>⚙ Galerie-Verwaltung</h1>
-  <p class="subtitle">Jens Piegsa · <a href="../" style="color:var(--accent);">← Zurück zur Galerie</a></p>
+  <div class="topbar">
+    <div>
+      <h1>🎨 Galerie-Admin</h1>
+      <p class="status ok" id="conn-status">GitHub verbunden</p>
+    </div>
+    <div style="display:flex;gap:.5rem;align-items:center">
+      <button class="btn btn-secondary btn-sm" onclick="loadArtworks()">↺ Aktualisieren</button>
+      <button class="btn btn-danger btn-sm" onclick="logout()">Abmelden</button>
+    </div>
+  </div>
 
   <div class="tabs">
-    <div class="tab active" onclick="switchTab('tab-artworks')">🖼 Werke</div>
-    <div class="tab" onclick="switchTab('tab-upload')">📁 Upload</div>
-    <div class="tab" onclick="switchTab('tab-new')">➕ Neues Werk</div>
-    <div class="tab" onclick="switchTab('tab-settings')">🔐 Passwörter</div>
+    <button class="tab active" onclick="showTab('tab-upload')">➕ Werk hinzufügen</button>
+    <button class="tab" onclick="showTab('tab-list')">📋 Alle Werke</button>
+    <button class="tab" onclick="showTab('tab-settings')">⚙️ Einstellungen</button>
   </div>
 
-  <!-- Artwork list -->
-  <div id="tab-artworks" class="tab-content active">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
-      <strong style="color:var(--accent)">Alle Werke</strong>
-      <select id="filter-section" onchange="renderArtworkList()" style="width:auto;margin:0">
-        <option value="all">Alle Bereiche</option>
-        <option value="free">Frei</option>
-        <option value="premium">Premium</option>
-        <option value="age13">13+</option>
-        <option value="age18">18+</option>
-      </select>
-    </div>
-    <div id="artwork-list"></div>
-  </div>
+  <!-- ─── TAB: UPLOAD ─────────────────────────────────── -->
+  <div id="tab-upload" class="tab-panel active">
 
-  <!-- Upload -->
-  <div id="tab-upload" class="tab-content">
-    <div class="card">
-      <h3>📁 Bilder hochladen (→ GitHub)</h3>
-      <p style="color:var(--muted);font-size:.85rem;margin-bottom:1rem">Bilder werden direkt in das Gallery-Repository hochgeladen (assets/images/).</p>
-      <div class="upload-zone" onclick="document.getElementById('file-input').click()">
-        <div class="icon">🖼</div>
-        <p style="color:var(--muted)">Klicken oder Bilder hierher ziehen</p>
-        <p style="color:var(--muted);font-size:.8rem;margin-top:.5rem">JPG, PNG, WebP · max. 10 MB pro Datei</p>
-        <input type="file" id="file-input" multiple accept="image/*" onchange="handleFiles(this.files)">
+    <!-- BILD -->
+    <div class="form-card">
+      <h2>🖼️ Bild hochladen</h2>
+      <div class="img-drop" id="img-drop" onclick="document.getElementById('img-file').click()"
+           ondragover="event.preventDefault();this.classList.add('drag-over')"
+           ondragleave="this.classList.remove('drag-over')"
+           ondrop="handleDrop(event)">
+        <div id="drop-hint">📂 Bild hier ablegen oder klicken zum Auswählen<br><small style="color:#555">JPG, PNG, WebP — max. 10 MB</small></div>
+        <input type="file" id="img-file" accept="image/*" style="display:none" onchange="handleFile(this.files[0])">
+        <img id="img-preview" class="img-preview">
       </div>
-      <div id="upload-preview" class="upload-preview"></div>
-      <div id="upload-status" class="status-msg"></div>
+      <div id="img-info" style="color:var(--muted);font-size:.75rem;margin-top:.5rem"></div>
     </div>
-  </div>
 
-  <!-- New artwork form -->
-  <div id="tab-new" class="tab-content">
-    <div class="card">
-      <h3>➕ Neues Werk anlegen</h3>
-      <div class="artwork-editor-grid">
-        <div>
-          <label>ID (eindeutig, keine Leerzeichen)</label>
-          <input type="text" id="n-id" placeholder="z.B. akt-zeichnung-2026">
-          <label>Titel</label>
-          <input type="text" id="n-title" placeholder="Werktitel">
-          <label>Jahr</label>
-          <input type="text" id="n-year" placeholder="2026">
-          <label>Medium</label>
-          <input type="text" id="n-medium" placeholder="z.B. Bleistift auf Papier">
+    <!-- ANGABEN -->
+    <div class="form-card">
+      <h2>📝 Kunstwerk-Angaben</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Titel (DE) *</label>
+          <input type="text" id="f-title" placeholder="z. B. Ohne Titel #7">
+        </div>
+        <div class="form-group">
+          <label>Untertitel (DE)</label>
+          <input type="text" id="f-subtitle" placeholder="z. B. Aus der Serie »Plattenbau«">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Jahr *</label>
+          <input type="number" id="f-year" placeholder="2025" min="1900" max="2099">
+        </div>
+        <div class="form-group">
           <label>Format / Größe</label>
-          <input type="text" id="n-size" placeholder="z.B. 40 × 50 cm">
-          <label>Beschreibung</label>
-          <textarea id="n-desc" placeholder="Kurzbeschreibung des Werkes"></textarea>
+          <input type="text" id="f-size" placeholder="z. B. 50 × 70 cm">
         </div>
-        <div>
-          <label>Bildpfad (aus assets/images/)</label>
-          <input type="text" id="n-img" placeholder="assets/images/dateiname.jpg">
-          <label>Galerie-Bereich</label>
-          <select id="n-section">
-            <option value="free">Frei (kostenlos)</option>
-            <option value="premium">Premium</option>
-            <option value="age13">13+</option>
-            <option value="age18">18+</option>
-          </select>
-          <label>Typ</label>
-          <div class="switch-group" id="n-type-group">
-            <button class="switch-btn active" data-val="original" onclick="selectType(this)">Original</button>
-            <button class="switch-btn" data-val="reproduction" onclick="selectType(this)">Reproduktion</button>
-            <button class="switch-btn" data-val="both" onclick="selectType(this)">Beides</button>
-          </div>
-          <label>Preis Original (EUR, leer = nur Anfrage)</label>
-          <input type="text" id="n-price-orig" placeholder="z.B. 580.00">
-          <label>Preis Reproduktion (EUR, leer = nur Anfrage)</label>
-          <input type="text" id="n-price-repr" placeholder="z.B. 89.00">
-          <label>Status</label>
-          <div class="switch-group" id="n-reserved-group">
-            <button class="switch-btn active" data-val="false" onclick="selectReserved(this)">Verfügbar</button>
-            <button class="switch-btn" data-val="true" onclick="selectReserved(this)">🔖 Reserviert</button>
-          </div>
-          <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.8rem">
-            <input type="checkbox" id="n-inquiry-only" style="width:auto;margin:0">
-            <label for="n-inquiry-only" style="display:inline;text-transform:none;font-size:.85rem">Nur Anfrage (kein direkter Kauf)</label>
-          </div>
+        <div class="form-group">
+          <label>Technik / Medium</label>
+          <input type="text" id="f-medium" placeholder="z. B. Acryl auf Leinwand">
         </div>
       </div>
-      <button class="btn btn-primary" onclick="saveNewArtwork()">Werk speichern (→ GitHub)</button>
-      <div id="new-artwork-status" class="status-msg"></div>
+      <div class="form-group" style="margin-bottom:.75rem">
+        <label>Beschreibung (DE)</label>
+        <textarea id="f-desc" placeholder="Kurze Beschreibung des Werkes …" rows="3"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Kategorie *</label>
+          <select id="f-cat">
+            <option value="free">🎨 Freie Galerie</option>
+            <option value="premium">⭐ Premium</option>
+            <option value="age13">🔒 13+ (verborgen)</option>
+            <option value="age18">🔞 18+ (verborgen)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Angebotstyp</label>
+          <select id="f-type">
+            <option value="">— keine (freies Werk) —</option>
+            <option value="original">🖌️ Nur Original</option>
+            <option value="reproduction">🖨️ Nur Reproduktion</option>
+            <option value="both">Original + Reproduktion</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row" id="price-row">
+        <div class="form-group">
+          <label>Preis Original (€)</label>
+          <input type="number" id="f-price-orig" placeholder="z. B. 800" min="0" step="10">
+        </div>
+        <div class="form-group">
+          <label>Preis Reproduktion (€)</label>
+          <input type="number" id="f-price-repr" placeholder="z. B. 120" min="0" step="5">
+        </div>
+      </div>
+      <div style="display:flex;gap:2rem;flex-wrap:wrap;margin-top:.5rem">
+        <div class="toggle-row">
+          <label class="toggle"><input type="checkbox" id="f-reserved"><span class="toggle-slider"></span></label>
+          <span class="toggle-label">🔖 Reserviert</span>
+        </div>
+        <div class="toggle-row">
+          <label class="toggle"><input type="checkbox" id="f-inquiry"><span class="toggle-slider"></span></label>
+          <span class="toggle-label">📬 Nur auf Anfrage</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUTO-ÜBERSETZUNG -->
+    <div class="form-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem;margin-bottom:1rem">
+        <h2 style="margin-bottom:0;border-bottom:none">🌍 Übersetzungen</h2>
+        <div style="display:flex;gap:.5rem;align-items:center">
+          <span id="trans-info" style="font-size:.75rem;color:var(--muted)"></span>
+          <button class="btn btn-translate btn-sm" id="btn-translate" onclick="autoTranslate()">🤖 Auto-übersetzen</button>
+        </div>
+      </div>
+      <p style="font-size:.78rem;color:var(--muted);margin-bottom:1rem">Titel und Beschreibung werden automatisch in alle Sprachen übersetzt. Du kannst die Ergebnisse vor dem Speichern bearbeiten.</p>
+
+      <div id="trans-langs" style="display:flex;flex-direction:column;gap:.75rem">
+        <!-- dynamisch befüllt -->
+      </div>
+    </div>
+
+    <!-- AKTIONEN -->
+    <div style="display:flex;gap:.75rem;flex-wrap:wrap;padding-bottom:3rem">
+      <button class="btn btn-primary" onclick="saveArtwork()">💾 Werk speichern &amp; hochladen</button>
+      <button class="btn btn-secondary" onclick="resetForm()">🗑️ Formular leeren</button>
+      <button class="btn btn-secondary" onclick="previewArtwork()">👁️ Vorschau</button>
     </div>
   </div>
 
-  <!-- Settings: passwords -->
-  <div id="tab-settings" class="tab-content">
-    <div class="card pw-section">
-      <h3>🔐 Passwörter verwalten</h3>
-      <p style="color:var(--muted);font-size:.85rem;margin-bottom:1.5rem">Passwörter werden als SHA-256-Hash gespeichert — nie im Klartext. Neuen Hash ins HTML einzutragen: <code style="font-size:.75rem">index.html → HASHES.premium / HASHES.age18</code></p>
-      <label>Neues Passwort eingeben → SHA-256 berechnen</label>
-      <div class="row" style="margin-bottom:.6rem">
-        <input type="password" id="pw-input" placeholder="Neues Passwort" style="margin:0">
-        <button class="btn btn-secondary" onclick="calcHash()" style="white-space:nowrap">Hash berechnen</button>
-      </div>
-      <div class="hash-display" id="hash-output">— Hash erscheint hier —</div>
+  <!-- ─── TAB: LISTE ────────────────────────────────────── -->
+  <div id="tab-list" class="tab-panel">
+    <div id="artwork-list" class="artwork-list">
+      <p style="color:var(--muted);font-style:italic">Werke werden geladen …</p>
     </div>
-    <div class="card">
-      <h3>ℹ️ Aktuelle Hashes (info)</h3>
-      <label>Premium</label>
-      <div class="hash-display">7842c2a547a07074b002f75bd7b7810875fe9eeb0aa8c8b5033726911532d311</div>
-      <br>
-      <label>18+</label>
-      <div class="hash-display">a65b903e52d40dcb686114288eed28f2e2a610635b279c96500ca03f4fd56f2e</div>
-      <br>
-      <label>Admin</label>
-      <div class="hash-display">e381e7b989c0a67a5ca325572053c6c2720126209723d30695a134630a84ea78</div>
+  </div>
+
+  <!-- ─── TAB: EINSTELLUNGEN ──────────────────────────── -->
+  <div id="tab-settings" class="tab-panel">
+    <div class="form-card">
+      <h2>🔑 GitHub-Token</h2>
+      <p style="color:var(--muted);font-size:.82rem;margin-bottom:1rem">Token wird nur im Browser gespeichert (localStorage). Rotation unter <a href="https://github.com/settings/tokens" target="_blank" style="color:var(--accent)">github.com/settings/tokens</a></p>
+      <div class="token-row">
+        <input type="password" id="settings-token" placeholder="ghp_…">
+        <button class="btn btn-secondary btn-sm" onclick="saveToken()">Speichern</button>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="testToken()">🔌 Verbindung testen</button>
+      <p id="token-result" style="font-size:.78rem;margin-top:.5rem;color:var(--muted)"></p>
+    </div>
+    <div class="form-card">
+      <h2>🔗 Geheime Links (für 13+ und 18+)</h2>
+      <p style="color:var(--muted);font-size:.82rem;margin-bottom:.75rem">Diese Links gibst du nur manuell weiter. Sie sind NICHT auf der Startseite sichtbar.</p>
+      <div style="display:flex;flex-direction:column;gap:.5rem">
+        <div style="background:var(--bg3);border-radius:var(--radius);padding:.75rem 1rem;font-family:monospace;font-size:.82rem;color:var(--accent);display:flex;align-items:center;justify-content:space-between;gap:.5rem">
+          <span id="link13">https://gallery.jens-piegsa.com/#age13</span>
+          <button class="btn btn-secondary btn-sm" onclick="copyLink('link13')">📋</button>
+        </div>
+        <div style="background:var(--bg3);border-radius:var(--radius);padding:.75rem 1rem;font-family:monospace;font-size:.82rem;color:var(--accent);display:flex;align-items:center;justify-content:space-between;gap:.5rem">
+          <span id="link18">https://gallery.jens-piegsa.com/#age18</span>
+          <button class="btn btn-secondary btn-sm" onclick="copyLink('link18')">📋</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
+<div id="status-bar">Bitte warten …</div>
+
 <script>
+/* ══ CONFIG ══════════════════════════════════════════ */
 const ADMIN_HASH = 'e381e7b989c0a67a5ca325572053c6c2720126209723d30695a134630a84ea78';
-const GH_TOKEN_KEY = 'piegsa_gh_token';
-const GH_REPO = 'JensPiegsa/gallery';
-const GH_BRANCH = 'main';
-const CONTACT_EMAIL = 'piegsa+art@gmail.com';
+const REPO       = 'JensPiegsa/gallery';
+const LANGS      = ['en','fr','es','it','ar','bs','sr','lt','zh','ja'];
+const LANG_NAMES = {de:'Deutsch',en:'English',fr:'Français',es:'Español',it:'Italiano',ar:'العربية',bs:'Bosanski',sr:'Srpski',lt:'Lietuvių',zh:'中文',ja:'日本語'};
+const MM_CODES   = {en:'en',fr:'fr',es:'es',it:'it',ar:'ar',bs:'hr',sr:'sr',lt:'lt',zh:'zh-CN',ja:'ja'};
 
-let ARTWORKS = {};
-let selectedType = 'original';
-let selectedReserved = 'false';
+let ghToken='';
+let artworks={free:[],premium:[],age13:[],age18:[]};
+let imgBase64='';
+let imgFilename='';
 
-async function sha256(msg) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
+/* ══ SHA-256 ════════════════════════════════════════ */
+async function sha256(msg){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(msg));
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
-async function doLogin() {
-  const hash = await sha256(document.getElementById('admin-pw').value);
-  if (hash === ADMIN_HASH) {
-    sessionStorage.setItem('piegsa_admin','1');
-    document.getElementById('login-screen').style.display='none';
-    document.getElementById('app').style.display='block';
-    loadArtworks();
-    promptGHToken();
-  } else {
-    document.getElementById('login-err').style.display='block';
+/* ══ LOGIN ══════════════════════════════════════════ */
+async function login(){
+  const pw=document.getElementById('admin-pw').value;
+  const token=document.getElementById('gh-token').value.trim();
+  const h=await sha256(pw);
+  if(h!==ADMIN_HASH){
+    const e=document.getElementById('login-err');
+    e.textContent='❌ Falsches Passwort';e.style.display='block';return;
   }
-}
-if (sessionStorage.getItem('piegsa_admin')==='1') {
+  ghToken=token||localStorage.getItem('piegsa_gh_token')||'';
+  if(token)localStorage.setItem('piegsa_gh_token',token);
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').style.display='block';
-  loadArtworks();
+  document.getElementById('settings-token').value=ghToken;
+  buildTransTable();
+  await loadArtworks();
 }
+function logout(){document.getElementById('login-screen').style.display='block';document.getElementById('app').style.display='none';}
 
-function promptGHToken() {
-  if (!localStorage.getItem(GH_TOKEN_KEY)) {
-    const tok = prompt('GitHub Personal Access Token (wird nur lokal gespeichert):');
-    if (tok) localStorage.setItem(GH_TOKEN_KEY, tok);
-  }
-}
-
-async function loadArtworks() {
-  try {
-    const r = await fetch('../data/artworks.json?v='+Date.now());
-    ARTWORKS = await r.json();
-  } catch(e) { ARTWORKS={free:[],premium:[],age13:[],age18:[]}; }
-  renderArtworkList();
-}
-
-/* ---- Tabs ---- */
-function switchTab(id) {
-  document.querySelectorAll('.tab').forEach((t,i) => {
-    const contents = document.querySelectorAll('.tab-content');
-    t.classList.toggle('active', t.getAttribute('onclick')==="switchTab('"+id+"')");
-  });
-  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+/* ══ TABS ═══════════════════════════════════════════ */
+function showTab(id){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  const tabs=document.querySelectorAll('.tab');
+  const map={tab_upload:0,'tab-upload':0,'tab-list':1,'tab-settings':2};
+  const idx={'tab-upload':0,'tab-list':1,'tab-settings':2};
+  tabs[idx[id]||0].classList.add('active');
 }
 
-/* ---- Artwork list ---- */
-function renderArtworkList() {
-  const filter = document.getElementById('filter-section').value;
-  const list = document.getElementById('artwork-list');
-  const sections = filter==='all' ? ['free','premium','age13','age18'] : [filter];
-  let html = '';
-  sections.forEach(sec => {
-    const items = ARTWORKS[sec]||[];
-    if(items.length===0&&filter!=='all') { html+='<p style="color:var(--muted);padding:1rem 0">Keine Werke in diesem Bereich.</p>'; return; }
-    items.forEach(art => {
-      html += `<div class="artwork-list-item">
-        <img src="../${art.img||'assets/placeholder.svg'}" alt="${art.title}" onerror="this.src='data:image/svg+xml,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;60&quot; height=&quot;50&quot;><rect width=&quot;60&quot; height=&quot;50&quot; fill=&quot;%23222&quot;/></svg>'">
-        <div class="info">
-          <strong>${art.title}</strong>
-          ${art.reserved?'<span class="badge-reserved">RESERVIERT</span>':''}
-          <span class="badge-type">${sec.toUpperCase()} · ${art.type||'?'}</span>
-          <small>${art.year||''} · ${art.medium||''} · ${art.price_original?'Orig: €'+art.price_original:''} ${art.price_reproduction?'Repr: €'+art.price_reproduction:''}</small>
-        </div>
-        <div style="display:flex;gap:.4rem">
-          <button class="btn btn-secondary" style="font-size:.75rem;padding:.35rem .8rem" onclick="toggleReserved('${sec}','${art.id}')">${art.reserved?'Freigeben':'Reservieren'}</button>
-          <button class="btn btn-danger" style="font-size:.75rem;padding:.35rem .8rem" onclick="deleteArtwork('${sec}','${art.id}')">✕</button>
-        </div>
-      </div>`;
-    });
-  });
-  list.innerHTML = html || '<p style="color:var(--muted)">Keine Werke gefunden.</p>';
-}
-
-/* ---- Type / reserved toggles ---- */
-function selectType(btn) {
-  document.querySelectorAll('#n-type-group .switch-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  selectedType = btn.dataset.val;
-}
-function selectReserved(btn) {
-  document.querySelectorAll('#n-reserved-group .switch-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  selectedReserved = btn.dataset.val;
-}
-
-/* ---- New artwork ---- */
-async function saveNewArtwork() {
-  const artwork = {
-    id: document.getElementById('n-id').value.trim().replace(/\s+/g,'-'),
-    title: document.getElementById('n-title').value.trim(),
-    year: document.getElementById('n-year').value.trim(),
-    medium: document.getElementById('n-medium').value.trim(),
-    size: document.getElementById('n-size').value.trim(),
-    desc: document.getElementById('n-desc').value.trim(),
-    img: document.getElementById('n-img').value.trim(),
-    type: selectedType,
-    reserved: selectedReserved === 'true',
-    price_original: document.getElementById('n-price-orig').value.trim() || null,
-    price_reproduction: document.getElementById('n-price-repr').value.trim() || null,
-    inquiry_only: document.getElementById('n-inquiry-only').checked
+/* ══ IMAGE HANDLING ══════════════════════════════════ */
+function handleFile(file){
+  if(!file)return;
+  if(file.size>10*1024*1024){showStatus('⚠️ Datei zu groß (max 10 MB)','#f44336');return;}
+  imgFilename='artworks/'+Date.now()+'_'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+  const reader=new FileReader();
+  reader.onload=e=>{
+    imgBase64=e.target.result.split(',')[1];
+    const prev=document.getElementById('img-preview');
+    prev.src=e.target.result;prev.style.display='block';
+    document.getElementById('drop-hint').style.display='none';
+    document.getElementById('img-info').textContent=`📎 ${file.name} (${(file.size/1024).toFixed(0)} KB) → ${imgFilename}`;
   };
-  const section = document.getElementById('n-section').value;
-  if (!artwork.id||!artwork.title) { showStatus('new-artwork-status','ID und Titel sind Pflicht.','error'); return; }
-  if (!ARTWORKS[section]) ARTWORKS[section]=[];
-  // Remove existing with same id
-  ARTWORKS[section] = ARTWORKS[section].filter(a=>a.id!==artwork.id);
-  ARTWORKS[section].push(artwork);
-  await pushArtworks('Werk hinzugefügt: '+artwork.title);
-  showStatus('new-artwork-status','✓ Werk gespeichert und auf GitHub gepusht!','success');
-  renderArtworkList();
+  reader.readAsDataURL(file);
+}
+function handleDrop(e){
+  e.preventDefault();
+  document.getElementById('img-drop').classList.remove('drag-over');
+  handleFile(e.dataTransfer.files[0]);
 }
 
-/* ---- Toggle reserved ---- */
-async function toggleReserved(section, id) {
-  const art = (ARTWORKS[section]||[]).find(a=>a.id===id);
-  if (!art) return;
-  art.reserved = !art.reserved;
-  await pushArtworks((art.reserved?'Reserviert':'Freigegeben')+': '+art.title);
-  renderArtworkList();
+/* ══ TRANSLATION TABLE ═══════════════════════════════ */
+function buildTransTable(){
+  const container=document.getElementById('trans-langs');
+  container.innerHTML=LANGS.map(lang=>`
+    <div class="form-card" style="padding:1rem;margin-bottom:0" id="trans-${lang}">
+      <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem">
+        <strong style="font-size:.82rem;color:var(--accent)">${lang.toUpperCase()}</strong>
+        <span style="color:var(--muted);font-size:.78rem">${LANG_NAMES[lang]}</span>
+        <span class="trans-status pending" id="ts-${lang}">ausstehend</span>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Titel</label>
+          <input type="text" id="trans-title-${lang}" placeholder="(wird übersetzt)">
+        </div>
+        <div class="form-group">
+          <label>Untertitel</label>
+          <input type="text" id="trans-sub-${lang}" placeholder="(wird übersetzt)">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Beschreibung</label>
+        <textarea id="trans-desc-${lang}" rows="2" placeholder="(wird übersetzt)"></textarea>
+      </div>
+    </div>`).join('');
 }
 
-/* ---- Delete artwork ---- */
-async function deleteArtwork(section, id) {
-  if (!confirm('Werk löschen?')) return;
-  ARTWORKS[section] = (ARTWORKS[section]||[]).filter(a=>a.id!==id);
-  await pushArtworks('Werk gelöscht: '+id);
-  renderArtworkList();
+/* ══ AUTO-TRANSLATE (MyMemory API) ══════════════════ */
+async function translateOne(text, targetCode, srcCode='de'){
+  if(!text.trim())return'';
+  try{
+    const url=`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${srcCode}|${targetCode}`;
+    const r=await fetch(url);
+    const d=await r.json();
+    return d.responseData?.translatedText||text;
+  }catch{return text;}
 }
 
-/* ---- GitHub API ---- */
-async function pushArtworks(commitMsg) {
-  const token = localStorage.getItem(GH_TOKEN_KEY);
-  if (!token) { promptGHToken(); return; }
-  const content = JSON.stringify(ARTWORKS, null, 2);
-  const b64 = btoa(unescape(encodeURIComponent(content)));
+async function autoTranslate(){
+  const title=document.getElementById('f-title').value.trim();
+  const sub=document.getElementById('f-subtitle').value.trim();
+  const desc=document.getElementById('f-desc').value.trim();
+  if(!title&&!desc){showStatus('⚠️ Bitte zuerst Titel oder Beschreibung auf Deutsch eingeben','#ffb74d');return;}
+  
+  const btn=document.getElementById('btn-translate');
+  btn.disabled=true;btn.textContent='⏳ Übersetze …';
+  document.getElementById('trans-info').textContent='';
 
-  // Get current file SHA
-  const meta = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/data/artworks.json`, {
-    headers:{'Authorization':'token '+token}
-  }).then(r=>r.json()).catch(()=>({}));
+  let done=0;
+  for(const lang of LANGS){
+    const code=MM_CODES[lang]||lang;
+    const statusEl=document.getElementById('ts-'+lang);
+    statusEl.className='trans-status pending';statusEl.textContent='⏳';
+    try{
+      const [tTitle,tSub,tDesc]=await Promise.all([
+        title?translateOne(title,code):'',
+        sub?translateOne(sub,code):'',
+        desc?translateOne(desc,code):''
+      ]);
+      if(tTitle)document.getElementById('trans-title-'+lang).value=tTitle;
+      if(tSub)document.getElementById('trans-sub-'+lang).value=tSub;
+      if(tDesc)document.getElementById('trans-desc-'+lang).value=tDesc;
+      statusEl.className='trans-status done';statusEl.textContent='✓ übersetzt';
+      done++;
+      document.getElementById('trans-info').textContent=`${done}/${LANGS.length} Sprachen`;
+      await new Promise(r=>setTimeout(r,200)); // rate limit
+    }catch{
+      statusEl.className='trans-status err';statusEl.textContent='Fehler';
+    }
+  }
+  btn.disabled=false;btn.textContent='🤖 Auto-übersetzen';
+  showStatus(`✅ ${done} von ${LANGS.length} Sprachen übersetzt`,'#81c784');
+}
 
-  const body = { message:commitMsg, content:b64, branch:GH_BRANCH };
-  if (meta.sha) body.sha = meta.sha;
-
-  const res = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/data/artworks.json`, {
-    method:'PUT', headers:{'Authorization':'token '+token,'Content-Type':'application/json'},
+/* ══ GITHUB API ══════════════════════════════════════ */
+async function ghGet(path){
+  const r=await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`,{
+    headers:{Authorization:'token '+ghToken,Accept:'application/vnd.github.v3+json'}
+  });
+  if(!r.ok)return null;
+  return r.json();
+}
+async function ghPut(path,content,message,sha=null){
+  const body={message,content:btoa(unescape(encodeURIComponent(content))),branch:'main'};
+  if(sha)body.sha=sha;
+  const r=await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`,{
+    method:'PUT',
+    headers:{Authorization:'token '+ghToken,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
     body:JSON.stringify(body)
   });
-  if (!res.ok) { const err=await res.json(); alert('GitHub-Fehler: '+JSON.stringify(err.message)); }
+  const d=await r.json();
+  return r.ok?d.content.sha:null;
 }
-
-/* ---- File upload ---- */
-function handleFiles(files) {
-  const preview = document.getElementById('upload-preview');
-  preview.innerHTML = '';
-  [...files].forEach(file => {
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const b64 = e.target.result.split(',')[1];
-      const itemEl = document.createElement('div');
-      itemEl.className = 'prev-item';
-      itemEl.innerHTML = `<img src="${e.target.result}" alt="${file.name}">
-        <div class="prev-name">${file.name}</div>
-        <div class="upload-progress"><div class="upload-progress-bar" id="prog-${file.name.replace(/[^a-z0-9]/gi,'_')}"></div></div>`;
-      preview.appendChild(itemEl);
-      await uploadToGitHub(file.name, b64, itemEl);
-    };
-    reader.readAsDataURL(file);
-  });
-}
-
-async function uploadToGitHub(filename, b64, el) {
-  const token = localStorage.getItem(GH_TOKEN_KEY);
-  if (!token) { promptGHToken(); return; }
-  const path = 'assets/images/'+filename;
-  const progId = 'prog-'+filename.replace(/[^a-z0-9]/gi,'_');
-
-  // Check if exists
-  const meta = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${path}`,{headers:{'Authorization':'token '+token}}).then(r=>r.json()).catch(()=>({}));
-  const body = { message:'Upload: '+filename, content:b64, branch:GH_BRANCH };
-  if (meta.sha) body.sha = meta.sha;
-
-  const bar = document.getElementById(progId);
-  if (bar) bar.style.width='30%';
-
-  const res = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${path}`,{
-    method:'PUT', headers:{'Authorization':'token '+token,'Content-Type':'application/json'},
+async function ghPutBinary(path,base64content,message,sha=null){
+  const body={message,content:base64content,branch:'main'};
+  if(sha)body.sha=sha;
+  const r=await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`,{
+    method:'PUT',
+    headers:{Authorization:'token '+ghToken,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
     body:JSON.stringify(body)
   });
-  if (bar) bar.style.width='100%';
-  if (res.ok) {
-    el.style.border='1px solid #2d6a2d';
-    showStatus('upload-status','✓ '+filename+' erfolgreich hochgeladen!','success');
-  } else {
-    el.style.border='1px solid #c00';
-    const err=await res.json();
-    showStatus('upload-status','Fehler bei '+filename+': '+err.message,'error');
+  return r.ok;
+}
+
+/* ══ LOAD ARTWORKS ═══════════════════════════════════ */
+async function loadArtworks(){
+  showStatus('⏳ Lade artworks.json …','#64b5f6');
+  try{
+    const d=await ghGet('data/artworks.json');
+    if(d&&d.content){
+      artworks=JSON.parse(atob(d.content.replace(/\n/g,'')));
+      renderList();
+      showStatus('✅ Werke geladen','#81c784');
+    }else{showStatus('Keine Werke gefunden','#ffb74d');}
+  }catch(e){showStatus('❌ Fehler beim Laden: '+e.message,'#f44336');}
+}
+
+/* ══ SAVE ARTWORK ════════════════════════════════════ */
+async function saveArtwork(){
+  const title=document.getElementById('f-title').value.trim();
+  const year=document.getElementById('f-year').value.trim();
+  const cat=document.getElementById('f-cat').value;
+  if(!title||!year){showStatus('⚠️ Titel und Jahr sind Pflichtfelder','#ffb74d');return;}
+
+  showStatus('⏳ Speichere …','#64b5f6');
+
+  // Upload image first
+  let imgPath='';
+  if(imgBase64){
+    const ok=await ghPutBinary(imgFilename,imgBase64,'🖼️ Artwork image: '+title);
+    imgPath=ok?'https://raw.githubusercontent.com/'+REPO+'/main/'+imgFilename:'';
+    if(!ok){showStatus('⚠️ Bild-Upload fehlgeschlagen — Werk ohne Bild gespeichert','#ffb74d');}
+  }
+
+  const id='art_'+Date.now();
+  const art={
+    id,
+    title,
+    subtitle:document.getElementById('f-subtitle').value.trim()||undefined,
+    year:parseInt(year),
+    size:document.getElementById('f-size').value.trim()||undefined,
+    medium:document.getElementById('f-medium').value.trim()||undefined,
+    desc:document.getElementById('f-desc').value.trim()||undefined,
+    img:imgPath||undefined,
+    type:document.getElementById('f-type').value||undefined,
+    reserved:document.getElementById('f-reserved').checked||undefined,
+    inquiry_only:document.getElementById('f-inquiry').checked||undefined,
+    price_original:parseFloat(document.getElementById('f-price-orig').value)||undefined,
+    price_reproduction:parseFloat(document.getElementById('f-price-repr').value)||undefined
+  };
+
+  // Add translations
+  for(const lang of LANGS){
+    const t=document.getElementById('trans-title-'+lang).value.trim();
+    const s=document.getElementById('trans-sub-'+lang).value.trim();
+    const d=document.getElementById('trans-desc-'+lang).value.trim();
+    if(t)art['title_'+lang]=t;
+    if(s)art['subtitle_'+lang]=s;
+    if(d)art['desc_'+lang]=d;
+  }
+  // Remove undefined keys
+  Object.keys(art).forEach(k=>{if(art[k]===undefined||art[k]==='')delete art[k];});
+
+  // Update artworks.json
+  const current=await ghGet('data/artworks.json');
+  let currentSha=null;
+  if(current&&current.content){
+    artworks=JSON.parse(atob(current.content.replace(/\n/g,'')));
+    currentSha=current.sha;
+  }
+  if(!artworks[cat])artworks[cat]=[];
+  artworks[cat].push(art);
+
+  const sha=await ghPut('data/artworks.json',JSON.stringify(artworks,null,2),'✅ Add artwork: '+title+' ('+cat+')',currentSha);
+  if(sha){
+    showStatus('✅ Werk "'+title+'" erfolgreich gespeichert!','#81c784');
+    resetForm();renderList();
+  }else{
+    showStatus('❌ Fehler beim Speichern der artworks.json','#f44336');
   }
 }
 
-/* ---- Hash calculator ---- */
-async function calcHash() {
-  const pw = document.getElementById('pw-input').value;
-  if (!pw) return;
-  const hash = await sha256(pw);
-  document.getElementById('hash-output').textContent = hash;
-  document.getElementById('hash-output').style.color='var(--accent)';
+/* ══ DELETE ARTWORK ══════════════════════════════════ */
+async function deleteArtwork(cat,id){
+  if(!confirm('Werk wirklich löschen? Dies kann nicht rückgängig gemacht werden.'))return;
+  artworks[cat]=artworks[cat].filter(a=>a.id!==id);
+  const current=await ghGet('data/artworks.json');
+  const sha=current?.sha;
+  await ghPut('data/artworks.json',JSON.stringify(artworks,null,2),'🗑️ Delete artwork: '+id,sha);
+  renderList();showStatus('🗑️ Werk gelöscht','#ffb74d');
 }
 
-/* ---- Helpers ---- */
-function showStatus(id, msg, type) {
-  const el = document.getElementById(id);
-  el.textContent = msg;
-  el.className = 'status-msg '+type;
-  el.style.display='block';
-  setTimeout(()=>el.style.display='none', 5000);
+/* ══ RENDER LIST ══════════════════════════════════════ */
+function renderList(){
+  const container=document.getElementById('artwork-list');
+  const all=Object.entries(artworks).flatMap(([cat,arr])=>arr.map(a=>({...a,_cat:cat})));
+  if(!all.length){container.innerHTML='<p style="color:var(--muted);font-style:italic">Noch keine Werke vorhanden.</p>';return;}
+  container.innerHTML=all.map(a=>`
+    <div class="artwork-item section-${a._cat}">
+      ${a.img?`<img src="${a.img}" alt="${a.title}" onerror="this.style.display='none'">`:'<div style="width:60px;height:60px;background:var(--bg3);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.5rem">🖼️</div>'}
+      <div class="info">
+        <h4>${a.title} <span class="badge-cat cat-${a._cat}">${{free:'🎨 Frei',premium:'⭐ Premium',age13:'🔒 13+',age18:'🔞 18+'}[a._cat]}</span></h4>
+        <div class="meta">${[a.year,a.medium,a.size].filter(Boolean).join(' · ')}${a.reserved?' · 🔖 Reserviert':''}${a.inquiry_only?' · 📬 Nur Anfrage':''}</div>
+        ${a.price_original?`<div class="meta" style="color:#ffd700">Original: €${a.price_original}${a.price_reproduction?' · Repro: €'+a.price_reproduction:''}</div>`:''}
+      </div>
+      <div class="actions">
+        <button class="btn btn-danger btn-sm" onclick="deleteArtwork('${a._cat}','${a.id}')">🗑️</button>
+      </div>
+    </div>`).join('');
 }
 
-// Drop zone
-const zone = document.querySelector('.upload-zone');
-if (zone) {
-  zone.addEventListener('dragover',e=>{e.preventDefault();zone.style.borderColor='var(--accent)';});
-  zone.addEventListener('dragleave',()=>zone.style.borderColor='var(--border)');
-  zone.addEventListener('drop',e=>{e.preventDefault();zone.style.borderColor='var(--border)';handleFiles(e.dataTransfer.files);});
+/* ══ HELPERS ══════════════════════════════════════════ */
+function resetForm(){
+  ['f-title','f-subtitle','f-year','f-size','f-medium','f-desc','f-price-orig','f-price-repr'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  document.getElementById('f-cat').value='free';
+  document.getElementById('f-type').value='';
+  document.getElementById('f-reserved').checked=false;
+  document.getElementById('f-inquiry').checked=false;
+  document.getElementById('img-preview').style.display='none';
+  document.getElementById('drop-hint').style.display='block';
+  document.getElementById('img-info').textContent='';
+  imgBase64='';imgFilename='';
+  LANGS.forEach(lang=>{
+    ['title','sub','desc'].forEach(f=>{
+      const el=document.getElementById(`trans-${f}-${lang}`);
+      if(el){el.value='';if(el.tagName==='TEXTAREA')el.value='';}
+    });
+    const s=document.getElementById('ts-'+lang);
+    if(s){s.className='trans-status pending';s.textContent='ausstehend';}
+  });
+  document.getElementById('trans-info').textContent='';
 }
+function previewArtwork(){
+  showStatus('Vorschau: Öffne gallery.jens-piegsa.com …','#64b5f6');
+  window.open('https://gallery.jens-piegsa.com','_blank');
+}
+let statusTimeout;
+function showStatus(msg,color='var(--text)'){
+  const el=document.getElementById('status-bar');
+  el.textContent=msg;el.style.color=color;el.classList.add('show');
+  clearTimeout(statusTimeout);statusTimeout=setTimeout(()=>el.classList.remove('show'),3500);
+}
+function saveToken(){
+  ghToken=document.getElementById('settings-token').value.trim();
+  localStorage.setItem('piegsa_gh_token',ghToken);
+  showStatus('✅ Token gespeichert','#81c784');
+}
+async function testToken(){
+  const r=await fetch(`https://api.github.com/repos/${REPO}`,{
+    headers:{Authorization:'token '+ghToken,Accept:'application/vnd.github.v3+json'}
+  });
+  const el=document.getElementById('token-result');
+  if(r.ok){el.textContent='✅ Verbindung OK — Repo erreichbar';el.style.color='#81c784';}
+  else{el.textContent='❌ Fehler '+r.status;el.style.color='#f44336';}
+}
+function copyLink(id){
+  navigator.clipboard.writeText(document.getElementById(id).textContent);
+  showStatus('📋 Link kopiert!','#64b5f6');
+}
+
+// Auto-load token on page load
+window.addEventListener('load',()=>{
+  const t=localStorage.getItem('piegsa_gh_token');
+  if(t){document.getElementById('gh-token').value=t;}
+});
 </script>
 </body>
 </html>
