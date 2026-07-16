@@ -1,0 +1,50 @@
+{
+  "_schema_version": "1.0",
+  "_help": "type: original|reproduction|both | reserved: true/false | price_original & price_reproduction in EUR | inquiry_only: true = no PayPal, only email",
+  "free": [
+    {
+      "id": "hanoi-2003",
+      "title": "Türme von Hanoi",
+      "year": "2003",
+      "medium": "Digitale Visualisierung",
+      "desc": "Algorithmische Visualisierung aus dem Koprojekt Computervisualistik × Industriedesign.",
+      "img": "assets/images/hanoi.jpg",
+      "type": "reproduction",
+      "reserved": false,
+      "price_original": null,
+      "price_reproduction": null,
+      "inquiry_only": false
+    },
+    {
+      "id": "mathmap-2003",
+      "title": "Landkarte der Mathematik",
+      "year": "2003",
+      "medium": "Digitale Illustration · Infografik",
+      "desc": "Kartografische Darstellung der mathematischen Teilgebiete und ihrer Verbindungen.",
+      "img": "assets/images/mathmap.jpg",
+      "type": "both",
+      "reserved": false,
+      "price_original": null,
+      "price_reproduction": null,
+      "inquiry_only": true
+    }
+  ],
+  "premium": [
+    {
+      "id": "premium-demo-1",
+      "title": "[ Titel eintragen ]",
+      "year": "2026",
+      "medium": "[ Medium, z.B. Acryl auf Leinwand ]",
+      "size": "[ Format, z.B. 60×80 cm ]",
+      "desc": "[ Beschreibung eintragen ]",
+      "img": "assets/images/premium-1.jpg",
+      "type": "both",
+      "reserved": false,
+      "price_original": "580.00",
+      "price_reproduction": "89.00",
+      "inquiry_only": false
+    }
+  ],
+  "age13": [],
+  "age18": []
+}
