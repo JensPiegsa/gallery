@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jens Piegsa — Galerie / Gallery</title>
+<meta name="description" content="Kunst an der Grenze zweier Welten. Art at the intersection of drawing and code.">
+<style>
+:root {
+  --bg:#0a0a0a;--bg2:#111;--accent:#c8a96e;--accent2:#8b6914;
+  --text:#e8e0d0;--muted:#888;--card-bg:#1a1a1a;--border:#333;
+  --free:#1a2e1a;--premium:#2e2614;--age13:#14202e;--age18:#2e1414;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Georgia',serif;min-height:100vh;}
+header{border-bottom:1px solid var(--border);padding:2rem;text-align:center;background:var(--bg2);}
+header h1{font-size:2.5rem;color:var(--accent);letter-spacing:.1em;font-weight:300;}
+header p{color:var(--muted);margin-top:.5rem;font-style:italic;font-size:1.05rem;}
+header nav{margin-top:1.5rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
+header nav a{color:var(--muted);text-decoration:none;font-size:.9rem;letter-spacing:.05em;transition:color .2s;}
+header nav a:hover{color:var(--accent);}
+.hero{padding:3.5rem 2rem;text-align:center;max-width:760px;margin:0 auto;}
+.hero h2{font-size:1.7rem;font-weight:300;color:var(--accent);margin-bottom:1rem;}
+.hero p{line-height:1.9;color:var(--muted);}
+/* Section cards */
+.sections{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem;padding:2rem;max-width:1200px;margin:0 auto;}
+.sc{border:1px solid var(--border);border-radius:8px;padding:2rem;cursor:pointer;transition:all .3s;position:relative;}
+.sc:hover{transform:translateY(-4px);border-color:var(--accent);}
+.sc.free{background:var(--free);}
+.sc.premium{background:var(--premium);}
+.sc.age13{background:var(--age13);}
+.sc.age18{background:var(--age18);}
+.badge{position:absolute;top:1rem;right:1rem;font-size:.7rem;padding:.2rem .6rem;border-radius:99px;font-weight:700;letter-spacing:.04em;}
+.free .badge{background:#1a4a1a;color:#90ee90;}
+.premium .badge{background:#4a3a10;color:#ffd700;}
+.age13 .badge{background:#102040;color:#87ceeb;}
+.age18 .badge{background:#400a0a;color:#ff9999;}
+.sc h3{font-size:1.3rem;color:var(--accent);margin-bottom:.5rem;font-weight:300;}
+.sc p{color:var(--muted);font-size:.88rem;line-height:1.6;}
+.enter-btn{display:inline-block;margin-top:1.5rem;padding:.55rem 1.4rem;border:1px solid var(--accent);color:var(--accent);border-radius:4px;font-size:.82rem;letter-spacing:.05em;background:transparent;cursor:pointer;transition:all .2s;}
+.enter-btn:hover{background:var(--accent);color:var(--bg);}
+/* Gallery section */
+.gallery-section{display:none;padding:2rem;max-width:1200px;margin:0 auto;}
+.gallery-section.active{display:block;}
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;}
+.section-header h2{color:var(--accent);font-weight:300;font-size:1.7rem;}
+.back-btn{padding:.45rem 1rem;border:1px solid var(--border);color:var(--muted);background:none;border-radius:4px;cursor:pointer;font-size:.82rem;}
+.back-btn:hover{border-color:var(--accent);color:var(--accent);}
+.artwork-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;}
+/* Artwork card */
+.artwork-card{background:var(--card-bg);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:all .3s;position:relative;}
+.artwork-card:hover{transform:translateY(-3px);border-color:var(--accent);}
+.artwork-card.reserved{opacity:.85;}
+/* Reserved ribbon */
+.ribbon-reserved{position:absolute;top:12px;right:-28px;background:#c00;color:#fff;font-size:.68rem;font-weight:700;padding:.2rem 2.2rem;transform:rotate(35deg);letter-spacing:.08em;z-index:2;box-shadow:0 1px 4px rgba(0,0,0,.5);}
+.artwork-img{width:100%;height:260px;object-fit:cover;background:#1a1a1a;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.8rem;position:relative;}
+.artwork-img img{width:100%;height:100%;object-fit:cover;}
+.artwork-info{padding:1.2rem;}
+.artwork-info h4{color:var(--accent);margin-bottom:.25rem;font-weight:400;}
+.artwork-info .meta{color:var(--muted);font-size:.82rem;margin-bottom:.6rem;}
+.artwork-info .desc{color:#bbb;font-size:.85rem;margin-bottom:.9rem;line-height:1.5;}
+/* Purchase options */
+.purchase-opts{border-top:1px solid var(--border);padding-top:.9rem;margin-top:.6rem;}
+.purchase-opts .opt{margin-bottom:.75rem;}
+.purchase-opts .opt-label{font-size:.75rem;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:.3rem;}
+.price-tag{color:#ffd700;font-size:.95rem;font-weight:400;display:inline-block;margin-right:.5rem;}
+.btn-inquire{display:inline-block;padding:.4rem 1rem;border:1px solid var(--accent);color:var(--accent);border-radius:4px;font-size:.78rem;text-decoration:none;letter-spacing:.04em;cursor:pointer;background:transparent;transition:all .2s;}
+.btn-inquire:hover{background:var(--accent);color:var(--bg);}
+.btn-reserved{display:inline-block;padding:.4rem 1rem;border:1px solid #666;color:#888;border-radius:4px;font-size:.78rem;cursor:default;letter-spacing:.04em;}
+.free-tag{color:#90ee90;font-size:.82rem;}
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:1000;justify-content:center;align-items:center;}
+.modal-overlay.active{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:2.5rem;max-width:420px;width:90%;position:relative;}
+.modal h3{color:var(--accent);margin-bottom:1.5rem;font-weight:300;font-size:1.3rem;}
+.modal input{width:100%;padding:.7rem 1rem;background:#222;border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:.95rem;margin-bottom:.8rem;}
+.modal input:focus{outline:none;border-color:var(--accent);}
+.btn-primary{width:100%;padding:.75rem;background:var(--accent);color:var(--bg);border:none;border-radius:4px;font-size:.95rem;cursor:pointer;letter-spacing:.05em;font-family:inherit;}
+.btn-primary:hover{background:var(--accent2);}
+.modal .close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.2rem;}
+.modal .error{color:#ff6b6b;font-size:.82rem;margin-top:.4rem;display:none;}
+.modal .legal-note{font-size:.72rem;color:var(--muted);margin-top:1rem;line-height:1.5;border-top:1px solid var(--border);padding-top:1rem;}
+footer{text-align:center;padding:3rem 2rem;color:var(--muted);font-size:.82rem;border-top:1px solid var(--border);margin-top:4rem;}
+footer a{color:var(--accent);text-decoration:none;}
+.paypal-container{margin-top:.4rem;}
+@media(max-width:600px){header h1{font-size:1.8rem;}.hero h2{font-size:1.2rem;}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Jens Piegsa</h1>
+  <p>Kunst an der Grenze zweier Welten · Art at the intersection of worlds</p>
+  <nav>
+    <a href="#" onclick="showLanding();return false;">Galerie</a>
+    <a href="https://info.jens-piegsa.com">Über mich · About</a>
+    <a href="mailto:piegsa+art@gmail.com">Kontakt</a>
+    <a href="admin/" style="font-size:.75rem;opacity:.4;">⚙</a>
+  </nav>
+</header>
+
+<div id="landing">
+  <div class="hero">
+    <h2>Willkommen · Welcome</h2>
+    <p>Zwischen Plattenbau und Pixel, zwischen Reißbrett und Rechner.<br>
+    <em>Between prefabricated concrete and pixels, between drawing board and computer.</em></p>
+  </div>
+  <div class="sections">
+    <div class="sc free" onclick="enterSection('free')">
+      <span class="badge">KOSTENLOS · FREE</span>
+      <h3>Freie Galerie</h3>
+      <p>Ausgewählte Werke — frei zugänglich.<br><em>Selected works — freely accessible.</em></p>
+      <button class="enter-btn">Betreten · Enter</button>
+    </div>
+    <div class="sc premium" onclick="showModal('modal-premium')">
+      <span class="badge">PREMIUM · €</span>
+      <h3>Premium-Galerie</h3>
+      <p>Exklusive Werke mit Kauf- und Anfrageoption.<br><em>Exclusive works — purchase &amp; inquire.</em></p>
+      <button class="enter-btn">Anmelden · Sign In</button>
+    </div>
+    <div class="sc age13" onclick="showModal('modal-age13')">
+      <span class="badge">+13 JAHRE</span>
+      <h3>Galerie 13+</h3>
+      <p>Thematisch reife Werke. Altersnachweis erforderlich.<br><em>Mature themes. Age check required.</em></p>
+      <button class="enter-btn">Alterscheck</button>
+    </div>
+    <div class="sc age18" onclick="showModal('modal-age18')">
+      <span class="badge">+18 · ADULT</span>
+      <h3>Galerie 18+</h3>
+      <p>Aktkunst &amp; explizite Werke. Strenge Altersverifikation.<br><em>Nude art &amp; explicit works. Adults only.</em></p>
+      <button class="enter-btn">Alterscheck</button>
+    </div>
+  </div>
+</div>
+
+<!-- Gallery Sections -->
+<div id="section-free"    class="gallery-section"><div class="section-header"><h2>Freie Galerie · Free Gallery</h2><button class="back-btn" onclick="showLanding()">← Zurück</button></div><div id="grid-free"    class="artwork-grid"></div></div>
+<div id="section-premium" class="gallery-section"><div class="section-header"><h2>Premium-Galerie</h2><button class="back-btn" onclick="showLanding()">← Zurück</button></div><div id="grid-premium" class="artwork-grid"></div></div>
+<div id="section-age13"   class="gallery-section"><div class="section-header"><h2>Galerie 13+</h2><button class="back-btn" onclick="showLanding()">← Zurück</button></div><div id="grid-age13"   class="artwork-grid"></div></div>
+<div id="section-age18"   class="gallery-section"><div class="section-header"><h2>Galerie 18+ · Adults Only</h2><button class="back-btn" onclick="showLanding()">← Zurück</button></div><div id="grid-age18"   class="artwork-grid"></div></div>
+
+<!-- Modals -->
+<div id="modal-premium" class="modal-overlay">
+  <div class="modal">
+    <button class="close" onclick="closeModal('modal-premium')">✕</button>
+    <h3>🔐 Premium-Zugang</h3>
+    <p style="color:var(--muted);font-size:.88rem;margin-bottom:1.2rem;">Passwort auf Anfrage: <a href="mailto:piegsa+art@gmail.com" style="color:var(--accent);">piegsa+art@gmail.com</a></p>
+    <input type="password" id="pw-premium" placeholder="Passwort · Password" onkeydown="if(event.key==='Enter')checkPremium()">
+    <button class="btn-primary" onclick="checkPremium()">Zugang · Enter</button>
+    <p class="error" id="err-premium">Falsches Passwort · Wrong password</p>
+  </div>
+</div>
+
+<div id="modal-age13" class="modal-overlay">
+  <div class="modal">
+    <button class="close" onclick="closeModal('modal-age13')">✕</button>
+    <h3>Altersverifikation 13+</h3>
+    <input type="text" id="name-13" placeholder="Vor- und Nachname · Full Name" maxlength="60">
+    <label style="color:var(--muted);font-size:.82rem;display:block;margin-bottom:.25rem;">Geburtsdatum · Date of birth</label>
+    <input type="date" id="dob-13">
+    <button class="btn-primary" onclick="checkAge(13)" style="margin-top:.5rem;">Bestätigen · Confirm</button>
+    <p class="error" id="err-age13">Mindestalter 13 Jahre · Minimum age 13</p>
+    <div class="legal-note">Durch Eingabe bestätige ich, mindestens 13 Jahre alt zu sein.<br><em>By submitting I confirm I am at least 13 years old.</em></div>
+  </div>
+</div>
+
+<div id="modal-age18" class="modal-overlay">
+  <div class="modal">
+    <button class="close" onclick="closeModal('modal-age18')">✕</button>
+    <h3>🔞 Altersverifikation 18+ (Aktkunst)</h3>
+    <input type="text" id="name-18" placeholder="Vor- und Nachname · Full Name" maxlength="60">
+    <label style="color:var(--muted);font-size:.82rem;display:block;margin-bottom:.25rem;">Geburtsdatum · Date of birth</label>
+    <input type="date" id="dob-18">
+    <input type="password" id="pw-18" placeholder="Zugangspasswort · Access password" onkeydown="if(event.key==='Enter')checkAge18()">
+    <button class="btn-primary" onclick="checkAge18()" style="margin-top:.5rem;">Bestätigen · Confirm</button>
+    <p class="error" id="err-age18">Zugang verweigert · Access denied</p>
+    <div class="legal-note">⚠️ <strong>DE:</strong> Diese Abfrage ersetzt keine rechtskonforme AV gemäß §4 JuSchG.<br><em>This gate does not fulfill §4 JuSchG legal AV requirements.</em></div>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 Jens Piegsa &nbsp;·&nbsp; <a href="mailto:piegsa+art@gmail.com">piegsa+art@gmail.com</a> &nbsp;·&nbsp; <a href="https://info.jens-piegsa.com">Impressum</a></p>
+  <p style="margin-top:.5rem"><a href="https://gallery.jens-piegsa.com">🇬🇧 EN</a> &nbsp; <a href="https://galerie.jens-piegsa.com">🇩🇪 DE</a></p>
+</footer>
+
+<script src="https://www.paypal.com/sdk/js?client-id=sb&currency=EUR" async></script>
+<script>
+const HASHES = {
+  premium:'7842c2a547a07074b002f75bd7b7810875fe9eeb0aa8c8b5033726911532d311',
+  age18:  'a65b903e52d40dcb686114288eed28f2e2a610635b279c96500ca03f4fd56f2e'
+};
+const CONTACT_EMAIL = 'piegsa+art@gmail.com';
+
+let ARTWORKS = {};
+
+async function sha256(msg) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function loadArtworks() {
+  try {
+    const r = await fetch('data/artworks.json?v=' + Date.now());
+    ARTWORKS = await r.json();
+  } catch(e) {
+    ARTWORKS = { free:[], premium:[], age13:[], age18:[] };
+  }
+  renderGrid('free', ARTWORKS.free || []);
+}
+loadArtworks();
+
+/* ---- Navigation ---- */
+function showLanding() {
+  document.getElementById('landing').style.display='block';
+  document.querySelectorAll('.gallery-section').forEach(s=>s.classList.remove('active'));
+}
+function enterSection(name, renderData) {
+  document.getElementById('landing').style.display='none';
+  document.querySelectorAll('.gallery-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('section-'+name).classList.add('active');
+  if (renderData) renderGrid(name, renderData);
+}
+
+/* ---- Modals ---- */
+function showModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) {
+  document.getElementById(id).classList.remove('active');
+  document.querySelectorAll('#'+id+' .error').forEach(e=>e.style.display='none');
+}
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('active');}));
+
+/* ---- Auth ---- */
+async function checkPremium() {
+  const hash = await sha256(document.getElementById('pw-premium').value);
+  if (hash === HASHES.premium) {
+    sessionStorage.setItem('piegsa_premium','1');
+    closeModal('modal-premium');
+    enterSection('premium', ARTWORKS.premium||[]);
+  } else { document.getElementById('err-premium').style.display='block'; }
+}
+
+function checkAge(minAge) {
+  const id = 'age'+minAge;
+  const name = document.getElementById('name-'+minAge).value.trim();
+  const dob  = document.getElementById('dob-'+minAge).value;
+  const err  = document.getElementById('err-'+id);
+  if (!name||!dob) { err.textContent='Bitte alle Felder ausfüllen · Please fill all fields'; err.style.display='block'; return; }
+  const age = (Date.now()-new Date(dob))/(365.25*24*3600*1000);
+  if (age>=minAge) {
+    sessionStorage.setItem('piegsa_'+id,'1');
+    closeModal('modal-'+id);
+    enterSection(id, ARTWORKS[id]||[]);
+  } else {
+    err.textContent='Mindestalter '+minAge+' Jahre · Minimum age '+minAge;
+    err.style.display='block';
+  }
+}
+
+async function checkAge18() {
+  const name = document.getElementById('name-18').value.trim();
+  const dob  = document.getElementById('dob-18').value;
+  const pw   = document.getElementById('pw-18').value;
+  const err  = document.getElementById('err-age18');
+  if (!name||!dob) { err.textContent='Bitte alle Felder ausfüllen'; err.style.display='block'; return; }
+  const age = (Date.now()-new Date(dob))/(365.25*24*3600*1000);
+  const hash = await sha256(pw);
+  if (age>=18 && hash===HASHES.age18) {
+    sessionStorage.setItem('piegsa_age18','1');
+    closeModal('modal-age18');
+    enterSection('age18', ARTWORKS.age18||[]);
+  } else {
+    err.textContent = age<18 ? 'Mindestalter 18 Jahre · Minimum age 18' : 'Falsches Passwort · Wrong password';
+    err.style.display='block';
+  }
+}
+
+/* ---- Artwork rendering ---- */
+function purchaseBlock(art) {
+  if (art.reserved) {
+    return `<div class="purchase-opts">
+      <span class="btn-reserved">🔖 Reserviert · Reserved</span>
+      <a class="btn-inquire" style="margin-left:.5rem" href="mailto:${CONTACT_EMAIL}?subject=Anfrage: ${encodeURIComponent(art.title)}&body=Ich%20interessiere%20mich%20f%C3%BCr%20%22${encodeURIComponent(art.title)}%22%20und%20m%C3%B6chte%20auf%20die%20Warteliste.">📬 Warteliste</a>
+    </div>`;
+  }
+
+  let html = '<div class="purchase-opts">';
+
+  // Original
+  if (art.type==='original'||art.type==='both') {
+    html += '<div class="opt"><div class="opt-label">Original</div>';
+    if (art.price_original) html += `<span class="price-tag">€ ${art.price_original}</span>`;
+    if (art.inquiry_only || !art.price_original) {
+      html += `<a class="btn-inquire" href="mailto:${CONTACT_EMAIL}?subject=Anfrage Original: ${encodeURIComponent(art.title)}&body=Ich%20interessiere%20mich%20f%C3%BCr%20das%20Original%20von%20%22${encodeURIComponent(art.title)}%22.">📬 Anfragen · Inquire</a>`;
+    } else {
+      html += `<div id="paypal-orig-${art.id}" class="paypal-container" data-amount="${art.price_original}" data-title="${art.title} (Original)"></div>`;
+    }
+    html += '</div>';
+  }
+
+  // Reproduktion / Print
+  if (art.type==='reproduction'||art.type==='both') {
+    html += '<div class="opt"><div class="opt-label">Reproduktion · Print</div>';
+    if (art.price_reproduction) html += `<span class="price-tag">€ ${art.price_reproduction}</span>`;
+    if (art.inquiry_only || !art.price_reproduction) {
+      html += `<a class="btn-inquire" href="mailto:${CONTACT_EMAIL}?subject=Anfrage Reproduktion: ${encodeURIComponent(art.title)}&body=Ich%20interessiere%20mich%20f%C3%BCr%20eine%20Reproduktion%20von%20%22${encodeURIComponent(art.title)}%22.">📬 Anfragen · Inquire</a>`;
+    } else {
+      html += `<div id="paypal-repr-${art.id}" class="paypal-container" data-amount="${art.price_reproduction}" data-title="${art.title} (Reproduktion)"></div>`;
+    }
+    html += '</div>';
+  }
+
+  if (!art.type || (!art.price_original && !art.price_reproduction && !art.inquiry_only)) {
+    html += `<span class="free-tag">✓ Freies Werk · Free to view</span>`;
+  }
+
+  html += '</div>';
+  return html;
+}
+
+function renderGrid(section, artworks) {
+  const grid = document.getElementById('grid-'+section);
+  if (!grid) return;
+  if (!artworks||!artworks.length) {
+    grid.innerHTML='<p style="color:var(--muted);grid-column:1/-1;padding:2rem 0">Neue Werke folgen bald · New works coming soon</p>';
+    return;
+  }
+  grid.innerHTML = artworks.map(art => `
+    <div class="artwork-card${art.reserved?' reserved':''}">
+      ${art.reserved ? '<div class="ribbon-reserved">RESERVIERT</div>' : ''}
+      <div class="artwork-img">
+        ${art.img ? `<img src="${art.img}" alt="${art.title}" loading="lazy" onerror="this.style.display='none'">` : ''}
+      </div>
+      <div class="artwork-info">
+        <h4>${art.title}</h4>
+        <div class="meta">${art.year}${art.medium?' · '+art.medium:''}${art.size?' · '+art.size:''}</div>
+        ${art.desc?`<div class="desc">${art.desc}</div>`:''}
+        ${purchaseBlock(art)}
+      </div>
+    </div>
+  `).join('');
+
+  // Init PayPal buttons
+  setTimeout(() => {
+    document.querySelectorAll('.paypal-container[data-amount]').forEach(el => {
+      if (el.dataset.rendered || !window.paypal) return;
+      el.dataset.rendered = '1';
+      paypal.Buttons({
+        style:{layout:'horizontal',color:'gold',shape:'rect',label:'buynow',height:32},
+        createOrder:(_,a)=>a.order.create({purchase_units:[{
+          amount:{value:el.dataset.amount,currency_code:'EUR'},
+          description:el.dataset.title+' — Jens Piegsa',
+          payee:{email_address:CONTACT_EMAIL}
+        }]}),
+        onApprove:(_,a)=>a.order.capture().then(()=>{el.innerHTML='<p style="color:#90ee90;margin-top:.5rem;font-size:.85rem">✓ Vielen Dank! Sie erhalten das Werk per E-Mail.</p>';}),
+        onError:e=>console.error(e)
+      }).render(el);
+    });
+  }, 500);
+}
+</script>
+</body>
+</html>
