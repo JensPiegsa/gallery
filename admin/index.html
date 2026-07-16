@@ -300,6 +300,7 @@ textarea{resize:vertical;min-height:80px}
 
 <div id="status-bar">Bitte warten …</div>
 
+<script src="https://cdn.jsdelivr.net/npm/piexifjs@1.0.6/piexif.js"></script>
 <script>
 /* ══ CONFIG ══════════════════════════════════════════ */
 const ADMIN_HASH = 'e381e7b989c0a67a5ca325572053c6c2720126209723d30695a134630a84ea78';
@@ -487,6 +488,40 @@ async function loadArtworks(){
   }catch(e){showStatus('❌ Fehler beim Laden: '+e.message,'#f44336');}
 }
 
+/* ══ EXIF/IPTC METADATA INJECTION ═══════════════════ */
+async function injectExif(dataUrl,meta){
+  if(!/^data:image\/jpe?g/i.test(dataUrl))return dataUrl;
+  if(typeof piexif==='undefined'){console.warn('piexifjs not loaded');return dataUrl;}
+  try{
+    const now=new Date();
+    const pad=n=>String(n).padStart(2,'0');
+    const dt=`${now.getFullYear()}:${pad(now.getMonth()+1)}:${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    const cr='\u00a9 '+now.getFullYear()+' Jens Piegsa. Alle Rechte vorbehalten / All rights reserved.';
+    const desc=(meta.title||'')+(meta.year?' ('+meta.year+')':'')+(meta.medium?' \u2014 '+meta.medium:'');
+    const comment=JSON.stringify({id:meta.id,title:meta.title,year:meta.year,medium:meta.medium,size:meta.size,category:meta.cat,gallery:'gallery.jens-piegsa.com'});
+    const exifObj={
+      '0th':{
+        [piexif.ImageIFD.Artist]:'Jens Piegsa',
+        [piexif.ImageIFD.Copyright]:cr,
+        [piexif.ImageIFD.ImageDescription]:desc,
+        [piexif.ImageIFD.Software]:'Jens Piegsa Gallery \u2014 gallery.jens-piegsa.com',
+        [piexif.ImageIFD.DateTime]:dt,
+        [piexif.ImageIFD.Make]:'Jens Piegsa',
+        [piexif.ImageIFD.Model]:'Original Artwork'
+      },
+      'Exif':{
+        [piexif.ExifIFD.DateTimeOriginal]:dt,
+        [piexif.ExifIFD.DateTimeDigitized]:dt,
+        [piexif.ExifIFD.UserComment]:piexif.helper.asciiToBytes(comment.substring(0,255))
+      }
+    };
+    const exifbytes=piexif.dump(exifObj);
+    const result=piexif.insert(exifbytes,dataUrl);
+    console.log('\u2713 EXIF injected:',desc);
+    return result;
+  }catch(e){console.warn('EXIF injection failed:',e);return dataUrl;}
+}
+
 /* ══ SAVE ARTWORK ════════════════════════════════════ */
 async function saveArtwork(){
   const title=document.getElementById('f-title').value.trim();
@@ -496,10 +531,18 @@ async function saveArtwork(){
 
   showStatus('⏳ Speichere …','#64b5f6');
 
-  // Upload image first
+  // Upload image first (with EXIF injection for JPEG)
   let imgPath='';
   if(imgBase64){
-    const ok=await ghPutBinary(imgFilename,imgBase64,'🖼️ Artwork image: '+title);
+    const isJpeg=/\.jpe?g$/i.test(imgFilename);
+    const mimeType=isJpeg?'image/jpeg':'image/png';
+    const artMeta={id:'art_tmp',title,year:document.getElementById('f-year').value.trim(),
+      medium:document.getElementById('f-medium').value.trim(),
+      size:document.getElementById('f-size').value.trim(),cat};
+    const rawDataUrl='data:'+mimeType+';base64,'+imgBase64;
+    const injectedUrl=await injectExif(rawDataUrl,artMeta);
+    const finalB64=injectedUrl.split(',')[1];
+    const ok=await ghPutBinary(imgFilename,finalB64,'🖼️ Artwork image: '+title);
     imgPath=ok?'https://raw.githubusercontent.com/'+REPO+'/main/'+imgFilename:'';
     if(!ok){showStatus('⚠️ Bild-Upload fehlgeschlagen — Werk ohne Bild gespeichert','#ffb74d');}
   }
