@@ -1,364 +1,392 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jens Piegsa — Galerie / Gallery</title>
+<title>Jens Piegsa — Galerie</title>
 <meta name="description" content="Kunst an der Grenze zweier Welten. Art at the intersection of drawing and code.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,700;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#0a0a0a;--bg2:#111;--accent:#c8a96e;--accent2:#8b6914;
-  --text:#e8e0d0;--muted:#888;--card-bg:#1a1a1a;--border:#333;
-  --free:#1a2e1a;--premium:#2e2614;--age13:#14202e;--age18:#2e1414;
+:root{
+  --bg:#080808;--bg2:#0f0f0f;--bg3:#161616;
+  --accent:#c8a96e;--accent2:#8b6914;--accent-glow:rgba(200,169,110,.18);
+  --text:#ede5d4;--muted:#7a7265;
+  --border:#242424;--border2:#2e2e2e;--card:#111111;
+  --free-bg:#0d1a0d;--premium-bg:#1a1400;
+  --radius:10px;--radius-lg:16px;
+  --shadow:0 8px 40px rgba(0,0,0,.6);
+  --ease:cubic-bezier(.25,.46,.45,.94);
+  --fs-xs:clamp(.7rem,1.2vw,.78rem);
+  --fs-sm:clamp(.82rem,1.5vw,.9rem);
+  --fs-base:clamp(.9rem,2vw,1rem);
+  --fs-lg:clamp(1.1rem,2.5vw,1.3rem);
+  --fs-xl:clamp(1.4rem,3.5vw,1.8rem);
+  --fs-2xl:clamp(1.8rem,5vw,2.6rem);
 }
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--text);font-family:'Georgia',serif;min-height:100vh;}
-header{border-bottom:1px solid var(--border);padding:2rem;text-align:center;background:var(--bg2);}
-header h1{font-size:2.5rem;color:var(--accent);letter-spacing:.1em;font-weight:300;}
-header p{color:var(--muted);margin-top:.5rem;font-style:italic;font-size:1.05rem;}
-header nav{margin-top:1.5rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
-header nav a{color:var(--muted);text-decoration:none;font-size:.9rem;letter-spacing:.05em;transition:color .2s;}
-header nav a:hover{color:var(--accent);}
-.hero{padding:3.5rem 2rem;text-align:center;max-width:760px;margin:0 auto;}
-.hero h2{font-size:1.7rem;font-weight:300;color:var(--accent);margin-bottom:1rem;}
-.hero p{line-height:1.9;color:var(--muted);}
-/* Section cards */
-.sections{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem;padding:2rem;max-width:1200px;margin:0 auto;}
-.sc{border:1px solid var(--border);border-radius:8px;padding:2rem;cursor:pointer;transition:all .3s;position:relative;}
-.sc:hover{transform:translateY(-4px);border-color:var(--accent);}
-.sc.free{background:var(--free);}
-.sc.premium{background:var(--premium);}
-.sc.age13{background:var(--age13);}
-.sc.age18{background:var(--age18);}
-.badge{position:absolute;top:1rem;right:1rem;font-size:.7rem;padding:.2rem .6rem;border-radius:99px;font-weight:700;letter-spacing:.04em;}
-.free .badge{background:#1a4a1a;color:#90ee90;}
-.premium .badge{background:#4a3a10;color:#ffd700;}
-.age13 .badge{background:#102040;color:#87ceeb;}
-.age18 .badge{background:#400a0a;color:#ff9999;}
-.sc h3{font-size:1.3rem;color:var(--accent);margin-bottom:.5rem;font-weight:300;}
-.sc p{color:var(--muted);font-size:.88rem;line-height:1.6;}
-.enter-btn{display:inline-block;margin-top:1.5rem;padding:.55rem 1.4rem;border:1px solid var(--accent);color:var(--accent);border-radius:4px;font-size:.82rem;letter-spacing:.05em;background:transparent;cursor:pointer;transition:all .2s;}
-.enter-btn:hover{background:var(--accent);color:var(--bg);}
-/* Gallery section */
-.gallery-section{display:none;padding:2rem;max-width:1200px;margin:0 auto;}
-.gallery-section.active{display:block;}
-.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;}
-.section-header h2{color:var(--accent);font-weight:300;font-size:1.7rem;}
-.back-btn{padding:.45rem 1rem;border:1px solid var(--border);color:var(--muted);background:none;border-radius:4px;cursor:pointer;font-size:.82rem;}
-.back-btn:hover{border-color:var(--accent);color:var(--accent);}
-.artwork-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;}
-/* Artwork card */
-.artwork-card{background:var(--card-bg);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:all .3s;position:relative;}
-.artwork-card:hover{transform:translateY(-3px);border-color:var(--accent);}
-.artwork-card.reserved{opacity:.85;}
-/* Reserved ribbon */
-.ribbon-reserved{position:absolute;top:12px;right:-28px;background:#c00;color:#fff;font-size:.68rem;font-weight:700;padding:.2rem 2.2rem;transform:rotate(35deg);letter-spacing:.08em;z-index:2;box-shadow:0 1px 4px rgba(0,0,0,.5);}
-.artwork-img{width:100%;height:260px;object-fit:cover;background:#1a1a1a;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.8rem;position:relative;}
-.artwork-img img{width:100%;height:100%;object-fit:cover;}
-.artwork-info{padding:1.2rem;}
-.artwork-info h4{color:var(--accent);margin-bottom:.25rem;font-weight:400;}
-.artwork-info .meta{color:var(--muted);font-size:.82rem;margin-bottom:.6rem;}
-.artwork-info .desc{color:#bbb;font-size:.85rem;margin-bottom:.9rem;line-height:1.5;}
-/* Purchase options */
-.purchase-opts{border-top:1px solid var(--border);padding-top:.9rem;margin-top:.6rem;}
-.purchase-opts .opt{margin-bottom:.75rem;}
-.purchase-opts .opt-label{font-size:.75rem;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:.3rem;}
-.price-tag{color:#ffd700;font-size:.95rem;font-weight:400;display:inline-block;margin-right:.5rem;}
-.btn-inquire{display:inline-block;padding:.4rem 1rem;border:1px solid var(--accent);color:var(--accent);border-radius:4px;font-size:.78rem;text-decoration:none;letter-spacing:.04em;cursor:pointer;background:transparent;transition:all .2s;}
-.btn-inquire:hover{background:var(--accent);color:var(--bg);}
-.btn-reserved{display:inline-block;padding:.4rem 1rem;border:1px solid #666;color:#888;border-radius:4px;font-size:.78rem;cursor:default;letter-spacing:.04em;}
-.free-tag{color:#90ee90;font-size:.82rem;}
-/* Modal */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:1000;justify-content:center;align-items:center;}
-.modal-overlay.active{display:flex;}
-.modal{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:2.5rem;max-width:420px;width:90%;position:relative;}
-.modal h3{color:var(--accent);margin-bottom:1.5rem;font-weight:300;font-size:1.3rem;}
-.modal input{width:100%;padding:.7rem 1rem;background:#222;border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:.95rem;margin-bottom:.8rem;}
-.modal input:focus{outline:none;border-color:var(--accent);}
-.btn-primary{width:100%;padding:.75rem;background:var(--accent);color:var(--bg);border:none;border-radius:4px;font-size:.95rem;cursor:pointer;letter-spacing:.05em;font-family:inherit;}
-.btn-primary:hover{background:var(--accent2);}
-.modal .close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.2rem;}
-.modal .error{color:#ff6b6b;font-size:.82rem;margin-top:.4rem;display:none;}
-.modal .legal-note{font-size:.72rem;color:var(--muted);margin-top:1rem;line-height:1.5;border-top:1px solid var(--border);padding-top:1rem;}
-footer{text-align:center;padding:3rem 2rem;color:var(--muted);font-size:.82rem;border-top:1px solid var(--border);margin-top:4rem;}
-footer a{color:var(--accent);text-decoration:none;}
-.paypal-container{margin-top:.4rem;}
-@media(max-width:600px){header h1{font-size:1.8rem;}.hero h2{font-size:1.2rem;}}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter','Georgia',serif;font-size:var(--fs-base);line-height:1.6;min-height:100vh;overflow-x:hidden}
+::selection{background:var(--accent-glow);color:var(--accent)}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent2)}
+
+/* LANG BAR */
+#lang-bar{background:#050505;border-bottom:1px solid var(--border);padding:.45rem 1.5rem;display:flex;gap:.3rem;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+[dir="rtl"] #lang-bar{justify-content:flex-start}
+.lang-btn{background:none;border:1px solid #282828;color:#555;border-radius:4px;padding:.18rem .55rem;font-size:.68rem;cursor:pointer;letter-spacing:.06em;transition:all .2s var(--ease);font-family:'Inter',sans-serif;font-weight:500}
+.lang-btn:hover,.lang-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(200,169,110,.08)}
+
+/* HEADER */
+header{border-bottom:1px solid var(--border);padding:clamp(1.5rem,4vw,2.5rem) 2rem;text-align:center;background:var(--bg2);position:relative}
+header::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:60px;height:1px;background:var(--accent)}
+header h1{font-family:'Playfair Display',Georgia,serif;font-size:var(--fs-2xl);color:var(--accent);letter-spacing:.12em;font-weight:300}
+header p{color:var(--muted);margin-top:.5rem;font-style:italic;font-size:var(--fs-sm);letter-spacing:.03em}
+header nav{margin-top:1.5rem;display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap}
+header nav a{color:var(--muted);text-decoration:none;font-size:var(--fs-xs);letter-spacing:.08em;text-transform:uppercase;transition:color .2s;padding:.25rem 0;border-bottom:1px solid transparent}
+header nav a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* HERO */
+.hero{padding:clamp(2.5rem,6vw,4.5rem) 2rem;text-align:center;max-width:720px;margin:0 auto}
+.hero h2{font-family:'Playfair Display',serif;font-size:var(--fs-xl);font-weight:300;color:var(--accent);margin-bottom:1rem;letter-spacing:.05em}
+.hero p{line-height:2;color:var(--muted);font-size:var(--fs-sm)}
+
+/* SECTION CARDS */
+.sections{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:1.25rem;padding:clamp(1rem,3vw,2rem);max-width:960px;margin:0 auto}
+.sc{border:1px solid var(--border2);border-radius:var(--radius-lg);padding:clamp(1.5rem,3vw,2.2rem);cursor:pointer;transition:transform .3s var(--ease),border-color .3s,box-shadow .3s;position:relative;overflow:hidden;background:var(--card)}
+.sc:hover{transform:translateY(-5px);border-color:var(--accent);box-shadow:0 12px 40px rgba(200,169,110,.12)}
+.sc.free{background:var(--free-bg)}
+.sc.premium{background:var(--premium-bg)}
+.sc-icon{font-size:2rem;margin-bottom:1rem;display:block;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.badge{display:inline-block;margin-bottom:.75rem;font-size:.65rem;padding:.2rem .7rem;border-radius:99px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.free .badge{background:rgba(144,238,144,.12);color:#90ee90;border:1px solid rgba(144,238,144,.25)}
+.premium .badge{background:rgba(255,215,0,.1);color:#ffd700;border:1px solid rgba(255,215,0,.2)}
+.sc h3{font-family:'Playfair Display',serif;font-size:var(--fs-lg);color:var(--accent);margin-bottom:.5rem;font-weight:400}
+.sc p{color:var(--muted);font-size:var(--fs-sm);line-height:1.7}
+.enter-btn{display:inline-flex;align-items:center;gap:.4rem;margin-top:1.5rem;padding:.6rem 1.5rem;border:1px solid var(--accent);color:var(--accent);border-radius:99px;font-size:var(--fs-xs);letter-spacing:.06em;background:transparent;cursor:pointer;transition:all .25s var(--ease);font-family:'Inter',sans-serif;font-weight:500}
+.enter-btn:hover{background:var(--accent);color:var(--bg);transform:scale(1.03)}
+
+/* GALLERY SECTIONS */
+.gallery-section{display:none;padding:clamp(1rem,3vw,2rem);max-width:1200px;margin:0 auto}
+.gallery-section.active{display:block;animation:fadeIn .3s var(--ease)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.section-header h2{font-family:'Playfair Display',serif;color:var(--accent);font-weight:300;font-size:var(--fs-xl)}
+.back-btn{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem 1.1rem;border:1px solid var(--border2);color:var(--muted);background:none;border-radius:99px;cursor:pointer;font-size:var(--fs-xs);transition:all .2s;font-family:'Inter',sans-serif}
+.back-btn:hover{border-color:var(--accent);color:var(--accent)}
+.artwork-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:1.25rem}
+
+/* ARTWORK CARD */
+.artwork-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:transform .3s var(--ease),border-color .3s,box-shadow .3s;position:relative}
+.artwork-card:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:var(--shadow)}
+.ribbon-reserved{position:absolute;top:14px;right:-30px;background:linear-gradient(135deg,#c00,#900);color:#fff;font-size:.62rem;font-weight:700;padding:.2rem 2.5rem;transform:rotate(35deg);letter-spacing:.1em;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+[dir="rtl"] .ribbon-reserved{right:auto;left:-30px;transform:rotate(-35deg)}
+.artwork-img{width:100%;aspect-ratio:4/3;background:var(--bg3);overflow:hidden}
+.artwork-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s var(--ease)}
+.artwork-card:hover .artwork-img img{transform:scale(1.04)}
+.artwork-info{padding:1.25rem}
+.artwork-info h4{font-family:'Playfair Display',serif;color:var(--accent);margin-bottom:.3rem;font-weight:400;font-size:var(--fs-base)}
+.artwork-info .meta{color:var(--muted);font-size:var(--fs-xs);margin-bottom:.6rem;letter-spacing:.02em}
+.artwork-info .desc{color:#bbb;font-size:var(--fs-sm);margin-bottom:.9rem;line-height:1.6}
+.purchase-opts{border-top:1px solid var(--border);padding-top:.9rem;margin-top:.6rem}
+.purchase-opts .opt{margin-bottom:.75rem}
+.purchase-opts .opt-label{font-size:.7rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.3rem}
+.price-tag{color:#ffd700;font-size:var(--fs-base);font-weight:500;display:inline-block;margin-right:.5rem}
+.btn-inquire{display:inline-flex;align-items:center;gap:.35rem;padding:.38rem .9rem;border:1px solid var(--accent);color:var(--accent);border-radius:99px;font-size:var(--fs-xs);text-decoration:none;cursor:pointer;background:transparent;transition:all .2s var(--ease);font-family:'Inter',sans-serif}
+.btn-inquire:hover{background:var(--accent);color:var(--bg)}
+.btn-reserved{display:inline-flex;align-items:center;gap:.35rem;padding:.38rem .9rem;border:1px solid #444;color:#666;border-radius:99px;font-size:var(--fs-xs)}
+.free-tag{color:#90ee90;font-size:var(--fs-sm)}
+.paypal-container{margin-top:.5rem}
+
+/* MODALS */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:1000;justify-content:center;align-items:center;padding:1rem}
+.modal-overlay.active{display:flex;animation:modalIn .25s var(--ease)}
+@keyframes modalIn{from{opacity:0}to{opacity:1}}
+.modal{background:rgba(16,14,10,.96);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:clamp(1.5rem,4vw,2.5rem);max-width:420px;width:100%;position:relative;box-shadow:var(--shadow),0 0 60px rgba(200,169,110,.08);animation:slideUp .3s var(--ease)}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.modal h3{font-family:'Playfair Display',serif;color:var(--accent);margin-bottom:1.5rem;font-weight:300;font-size:var(--fs-lg);letter-spacing:.03em}
+.modal input{width:100%;padding:.75rem 1.1rem;background:rgba(255,255,255,.04);border:1px solid var(--border2);color:var(--text);border-radius:var(--radius);font-size:var(--fs-base);margin-bottom:.75rem;transition:border-color .2s;font-family:'Inter',sans-serif}
+.modal input:focus{outline:none;border-color:var(--accent);background:rgba(200,169,110,.04)}
+.modal label{color:var(--muted);font-size:var(--fs-xs);display:block;margin-bottom:.3rem;letter-spacing:.04em}
+.btn-primary{width:100%;padding:.8rem;background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--bg);border:none;border-radius:99px;font-size:var(--fs-sm);cursor:pointer;letter-spacing:.06em;font-family:'Inter',sans-serif;font-weight:600;transition:all .25s var(--ease);display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:.5rem}
+.btn-primary:hover{filter:brightness(1.1);transform:scale(1.01)}
+.modal .close{position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--muted);cursor:pointer;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:all .2s}
+.modal .close:hover{background:rgba(255,255,255,.12);color:var(--text)}
+[dir="rtl"] .modal .close{right:auto;left:1rem}
+.modal .error{color:#ff6b6b;font-size:var(--fs-xs);margin-top:.5rem;display:none}
+.modal .legal-note{font-size:var(--fs-xs);color:var(--muted);margin-top:1rem;line-height:1.6;border-top:1px solid var(--border);padding-top:1rem}
+.modal .hint-link{color:var(--accent)}
+
+/* FOOTER */
+footer{text-align:center;padding:clamp(2rem,5vw,3rem) 2rem;color:var(--muted);font-size:var(--fs-xs);border-top:1px solid var(--border);margin-top:4rem;letter-spacing:.04em}
+footer a{color:var(--accent);text-decoration:none;transition:opacity .2s}
+footer a:hover{opacity:.8}
 </style>
 </head>
 <body>
+
+<div id="lang-bar">
+  <button class="lang-btn" onclick="setLang('de')">DE</button>
+  <button class="lang-btn" onclick="setLang('en')">EN</button>
+  <button class="lang-btn" onclick="setLang('fr')">FR</button>
+  <button class="lang-btn" onclick="setLang('es')">ES</button>
+  <button class="lang-btn" onclick="setLang('it')">IT</button>
+  <button class="lang-btn" onclick="setLang('ar')">AR</button>
+  <button class="lang-btn" onclick="setLang('bs')">BS</button>
+  <button class="lang-btn" onclick="setLang('sr')">SR</button>
+  <button class="lang-btn" onclick="setLang('lt')">LT</button>
+  <button class="lang-btn" onclick="setLang('zh')">ZH</button>
+  <button class="lang-btn" onclick="setLang('ja')">JA</button>
+</div>
+
 <header>
   <h1>Jens Piegsa</h1>
-  <p>Kunst an der Grenze zweier Welten · Art at the intersection of worlds</p>
+  <p data-i18n="subtitle"></p>
   <nav>
-    <a href="#" onclick="showLanding();return false;">Galerie</a>
-    <a href="https://info.jens-piegsa.com">Über mich · About</a>
-    <a href="mailto:piegsa+art@gmail.com">Kontakt</a>
-    <a href="admin/" style="font-size:.75rem;opacity:.4;">⚙</a>
+    <a href="#" onclick="showLanding();return false;" data-i18n="nav_gallery"></a>
+    <a href="https://info.jens-piegsa.com" data-i18n="nav_about"></a>
+    <a href="mailto:piegsa+art@gmail.com" data-i18n="nav_contact"></a>
+    <a href="admin/" style="font-size:.7rem;opacity:.3;letter-spacing:.05em;">⚙</a>
   </nav>
 </header>
 
+<!-- LANDING — NUR FREE + PREMIUM öffentlich sichtbar -->
 <div id="landing">
   <div class="hero">
-    <h2>Willkommen · Welcome</h2>
-    <p>Zwischen Plattenbau und Pixel, zwischen Reißbrett und Rechner.<br>
-    <em>Between prefabricated concrete and pixels, between drawing board and computer.</em></p>
+    <h2 data-i18n="hero_title"></h2>
+    <p data-i18n="hero_text"></p>
   </div>
   <div class="sections">
     <div class="sc free" onclick="enterSection('free')">
-      <span class="badge">KOSTENLOS · FREE</span>
-      <h3>Freie Galerie</h3>
-      <p>Ausgewählte Werke — frei zugänglich.<br><em>Selected works — freely accessible.</em></p>
-      <button class="enter-btn">Betreten · Enter</button>
+      <span class="sc-icon">🎨</span>
+      <span class="badge" data-i18n="free_badge"></span>
+      <h3 data-i18n="free_title"></h3>
+      <p data-i18n="free_desc"></p>
+      <button class="enter-btn" data-i18n="free_btn"></button>
     </div>
     <div class="sc premium" onclick="showModal('modal-premium')">
-      <span class="badge">PREMIUM · €</span>
-      <h3>Premium-Galerie</h3>
-      <p>Exklusive Werke mit Kauf- und Anfrageoption.<br><em>Exclusive works — purchase &amp; inquire.</em></p>
-      <button class="enter-btn">Anmelden · Sign In</button>
+      <span class="sc-icon">⭐</span>
+      <span class="badge" data-i18n="premium_badge"></span>
+      <h3 data-i18n="premium_title"></h3>
+      <p data-i18n="premium_desc"></p>
+      <button class="enter-btn" data-i18n="premium_btn"></button>
     </div>
-    <div class="sc age13" onclick="showModal('modal-age13')">
-      <span class="badge">+13 JAHRE</span>
-      <h3>Galerie 13+</h3>
-      <p>Thematisch reife Werke. Altersnachweis erforderlich.<br><em>Mature themes. Age check required.</em></p>
-      <button class="enter-btn">Alterscheck</button>
-    </div>
-    <div class="sc age18" onclick="showModal('modal-age18')">
-      <span class="badge">+18 · ADULT</span>
-      <h3>Galerie 18+</h3>
-      <p>Aktkunst &amp; explizite Werke. Strenge Altersverifikation.<br><em>Nude art &amp; explicit works. Adults only.</em></p>
-      <button class="enter-btn">Alterscheck</button>
-    </div>
+    <!-- +13 und +18: NICHT öffentlich — nur über manuell geteilte Links:
+         gallery.jens-piegsa.com/#age13  und  #age18 -->
   </div>
 </div>
 
 <!-- Gallery Sections -->
-<div id="section-free"    class="gallery-section"><div class="section-header"><h2>Freie Galerie · Free Gallery</h2><button class="back-btn" onclick="showLanding()">← Zurück</button></div><div id="grid-free"    class="artwork-grid"></div></div>
-<div id="section-premium" class="gallery-section"><div class="section-header"><h2>Premium-Galerie</h2><button class="back-btn" onclick="showLanding()">← Zurück</button></div><div id="grid-premium" class="artwork-grid"></div></div>
-<div id="section-age13"   class="gallery-section"><div class="section-header"><h2>Galerie 13+</h2><button class="back-btn" onclick="showLanding()">← Zurück</button></div><div id="grid-age13"   class="artwork-grid"></div></div>
-<div id="section-age18"   class="gallery-section"><div class="section-header"><h2>Galerie 18+ · Adults Only</h2><button class="back-btn" onclick="showLanding()">← Zurück</button></div><div id="grid-age18"   class="artwork-grid"></div></div>
+<div id="section-free"    class="gallery-section"><div class="section-header"><h2 data-i18n="g_free"></h2><button class="back-btn" onclick="showLanding()" data-i18n="back"></button></div><div id="grid-free"    class="artwork-grid"></div></div>
+<div id="section-premium" class="gallery-section"><div class="section-header"><h2 data-i18n="g_premium"></h2><button class="back-btn" onclick="showLanding()" data-i18n="back"></button></div><div id="grid-premium" class="artwork-grid"></div></div>
+<div id="section-age13"   class="gallery-section"><div class="section-header"><h2 data-i18n="g_age13"></h2><button class="back-btn" onclick="showLanding()" data-i18n="back"></button></div><div id="grid-age13"   class="artwork-grid"></div></div>
+<div id="section-age18"   class="gallery-section"><div class="section-header"><h2 data-i18n="g_age18"></h2><button class="back-btn" onclick="showLanding()" data-i18n="back"></button></div><div id="grid-age18"   class="artwork-grid"></div></div>
 
-<!-- Modals -->
+<!-- MODALS -->
 <div id="modal-premium" class="modal-overlay">
   <div class="modal">
     <button class="close" onclick="closeModal('modal-premium')">✕</button>
-    <h3>🔐 Premium-Zugang</h3>
-    <p style="color:var(--muted);font-size:.88rem;margin-bottom:1.2rem;">Passwort auf Anfrage: <a href="mailto:piegsa+art@gmail.com" style="color:var(--accent);">piegsa+art@gmail.com</a></p>
-    <input type="password" id="pw-premium" placeholder="Passwort · Password" onkeydown="if(event.key==='Enter')checkPremium()">
-    <button class="btn-primary" onclick="checkPremium()">Zugang · Enter</button>
-    <p class="error" id="err-premium">Falsches Passwort · Wrong password</p>
+    <h3 data-i18n="pm_title"></h3>
+    <p style="color:var(--muted);font-size:.88rem;margin-bottom:1.2rem;">
+      <span data-i18n="pm_hint"></span>
+      <a href="mailto:piegsa+art@gmail.com" class="hint-link"> piegsa+art@gmail.com</a>
+    </p>
+    <input type="password" id="pw-premium" data-i18n-ph="pm_pw" onkeydown="if(event.key==='Enter')checkPremium()">
+    <button class="btn-primary" onclick="checkPremium()" data-i18n="pm_btn"></button>
+    <p class="error" id="err-premium" data-i18n="pm_err"></p>
   </div>
 </div>
 
 <div id="modal-age13" class="modal-overlay">
   <div class="modal">
     <button class="close" onclick="closeModal('modal-age13')">✕</button>
-    <h3>Altersverifikation 13+</h3>
-    <input type="text" id="name-13" placeholder="Vor- und Nachname · Full Name" maxlength="60">
-    <label style="color:var(--muted);font-size:.82rem;display:block;margin-bottom:.25rem;">Geburtsdatum · Date of birth</label>
+    <h3 data-i18n="a13_title"></h3>
+    <input type="text" id="name-13" data-i18n-ph="a_name" maxlength="60">
+    <label data-i18n="a_dob"></label>
     <input type="date" id="dob-13">
-    <button class="btn-primary" onclick="checkAge(13)" style="margin-top:.5rem;">Bestätigen · Confirm</button>
-    <p class="error" id="err-age13">Mindestalter 13 Jahre · Minimum age 13</p>
-    <div class="legal-note">Durch Eingabe bestätige ich, mindestens 13 Jahre alt zu sein.<br><em>By submitting I confirm I am at least 13 years old.</em></div>
+    <button class="btn-primary" onclick="checkAge(13)" data-i18n="a_btn"></button>
+    <p class="error" id="err-age13"></p>
+    <div class="legal-note" data-i18n="a13_legal"></div>
   </div>
 </div>
 
 <div id="modal-age18" class="modal-overlay">
   <div class="modal">
     <button class="close" onclick="closeModal('modal-age18')">✕</button>
-    <h3>🔞 Altersverifikation 18+ (Aktkunst)</h3>
-    <input type="text" id="name-18" placeholder="Vor- und Nachname · Full Name" maxlength="60">
-    <label style="color:var(--muted);font-size:.82rem;display:block;margin-bottom:.25rem;">Geburtsdatum · Date of birth</label>
+    <h3 data-i18n="a18_title"></h3>
+    <input type="text" id="name-18" data-i18n-ph="a_name" maxlength="60">
+    <label data-i18n="a_dob"></label>
     <input type="date" id="dob-18">
-    <input type="password" id="pw-18" placeholder="Zugangspasswort · Access password" onkeydown="if(event.key==='Enter')checkAge18()">
-    <button class="btn-primary" onclick="checkAge18()" style="margin-top:.5rem;">Bestätigen · Confirm</button>
-    <p class="error" id="err-age18">Zugang verweigert · Access denied</p>
-    <div class="legal-note">⚠️ <strong>DE:</strong> Diese Abfrage ersetzt keine rechtskonforme AV gemäß §4 JuSchG.<br><em>This gate does not fulfill §4 JuSchG legal AV requirements.</em></div>
+    <input type="password" id="pw-18" data-i18n-ph="a18_pw" onkeydown="if(event.key==='Enter')checkAge18()">
+    <button class="btn-primary" onclick="checkAge18()" data-i18n="a_btn"></button>
+    <p class="error" id="err-age18"></p>
+    <div class="legal-note" data-i18n="a18_legal"></div>
   </div>
 </div>
 
 <footer>
-  <p>© 2026 Jens Piegsa &nbsp;·&nbsp; <a href="mailto:piegsa+art@gmail.com">piegsa+art@gmail.com</a> &nbsp;·&nbsp; <a href="https://info.jens-piegsa.com">Impressum</a></p>
-  <p style="margin-top:.5rem"><a href="https://gallery.jens-piegsa.com">🇬🇧 EN</a> &nbsp; <a href="https://galerie.jens-piegsa.com">🇩🇪 DE</a></p>
+  <p>© 2026 Jens Piegsa &nbsp;·&nbsp;
+     <a href="mailto:piegsa+art@gmail.com">piegsa+art@gmail.com</a> &nbsp;·&nbsp;
+     <a href="https://info.jens-piegsa.com" data-i18n="footer_impressum"></a>
+  </p>
 </footer>
 
 <script src="https://www.paypal.com/sdk/js?client-id=BAACq76B3Cz_8tZddJ-cTkrfzN4Al5wsFjZLyZYioKxJrlNzOSnHR7IgtZemUqKf61v_z6OU3g3LkVkqqg&currency=EUR" async></script>
 <script>
-const HASHES = {
-  premium:'7842c2a547a07074b002f75bd7b7810875fe9eeb0aa8c8b5033726911532d311',
-  age18:  'a65b903e52d40dcb686114288eed28f2e2a610635b279c96500ca03f4fd56f2e'
+const T={
+de:{dir:"ltr",subtitle:"Kunst an der Grenze zweier Welten",nav_gallery:"🗂️ Galerie",nav_about:"👤 Über mich",nav_contact:"✉️ Kontakt",hero_title:"Willkommen",hero_text:"Zwischen Plattenbau und Pixel, zwischen Reißbrett und Rechner.",free_badge:"KOSTENLOS",free_title:"Freie Galerie",free_desc:"Ausgewählte Werke — frei zugänglich für alle.",free_btn:"🖼️ Betreten",premium_badge:"PREMIUM",premium_title:"Premium-Galerie",premium_desc:"Exklusive Werke mit Kauf- und Anfrageoption.",premium_btn:"🔑 Anmelden",pm_title:"🔐 Premium-Zugang",pm_hint:"Passwort auf Anfrage:",pm_pw:"Passwort",pm_btn:"🔓 Zugang öffnen",pm_err:"❌ Falsches Passwort",a13_title:"🔒 Altersverifikation 13+",a_name:"Vor- und Nachname",a_dob:"Geburtsdatum",a_btn:"✅ Bestätigen",a13_err:"⚠️ Mindestalter 13 Jahre erforderlich",a13_legal:"Durch Eingabe bestätige ich, mindestens 13 Jahre alt zu sein.",a18_title:"🔞 Altersverifikation 18+ (Aktkunst)",a18_pw:"Zugangspasswort",a18_err:"❌ Zugang verweigert",a18_legal:"⚠️ Diese Abfrage ersetzt keine rechtskonforme AV gemäß §4 JuSchG.",back:"← Zurück",g_free:"🎨 Freie Galerie",g_premium:"⭐ Premium-Galerie",g_age13:"🔒 Galerie 13+",g_age18:"🔞 Galerie 18+",reserved:"RESERVIERT",waitlist:"📬 Warteliste",original:"🖌️ Original",reproduction:"🖨️ Reproduktion",inquire:"📬 Anfragen",free_view:"✓ Freies Werk",coming_soon:"✨ Neue Werke folgen bald",thank_you:"✅ Vielen Dank! Sie erhalten eine Bestätigung per E-Mail.",fill_all:"⚠️ Bitte alle Felder ausfüllen",wrong_pw:"❌ Falsches Passwort",footer_impressum:"Impressum"},
+en:{dir:"ltr",subtitle:"Art at the intersection of two worlds",nav_gallery:"🗂️ Gallery",nav_about:"👤 About",nav_contact:"✉️ Contact",hero_title:"Welcome",hero_text:"Between prefabricated concrete and pixels, between drawing board and computer.",free_badge:"FREE",free_title:"Free Gallery",free_desc:"Selected works — freely accessible to all.",free_btn:"🖼️ Enter",premium_badge:"PREMIUM",premium_title:"Premium Gallery",premium_desc:"Exclusive works — purchase & inquire.",premium_btn:"🔑 Sign In",pm_title:"🔐 Premium Access",pm_hint:"Password on request:",pm_pw:"Password",pm_btn:"🔓 Enter",pm_err:"❌ Wrong password",a13_title:"🔒 Age Verification 13+",a_name:"Full Name",a_dob:"Date of birth",a_btn:"✅ Confirm",a13_err:"⚠️ Minimum age required: 13 years",a13_legal:"By submitting I confirm I am at least 13 years old.",a18_title:"🔞 Age Verification 18+ (Nude Art)",a18_pw:"Access password",a18_err:"❌ Access denied",a18_legal:"⚠️ This gate does not fulfil §4 JuSchG legal AV requirements.",back:"← Back",g_free:"🎨 Free Gallery",g_premium:"⭐ Premium Gallery",g_age13:"🔒 Gallery 13+",g_age18:"🔞 Gallery 18+",reserved:"RESERVED",waitlist:"📬 Waitlist",original:"🖌️ Original",reproduction:"🖨️ Print",inquire:"📬 Inquire",free_view:"✓ Free to view",coming_soon:"✨ New works coming soon",thank_you:"✅ Thank you! You'll receive a confirmation email.",fill_all:"⚠️ Please fill all fields",wrong_pw:"❌ Wrong password",footer_impressum:"Imprint"},
+fr:{dir:"ltr",subtitle:"L'art à la frontière de deux mondes",nav_gallery:"🗂️ Galerie",nav_about:"👤 À propos",nav_contact:"✉️ Contact",hero_title:"Bienvenue",hero_text:"Entre béton préfabriqué et pixels, entre planche à dessin et ordinateur.",free_badge:"GRATUIT",free_title:"Galerie Libre",free_desc:"Œuvres sélectionnées — librement accessibles.",free_btn:"🖼️ Entrer",premium_badge:"PREMIUM",premium_title:"Galerie Premium",premium_desc:"Œuvres exclusives — achat et demandes.",premium_btn:"🔑 Se connecter",pm_title:"🔐 Accès Premium",pm_hint:"Mot de passe sur demande :",pm_pw:"Mot de passe",pm_btn:"🔓 Accéder",pm_err:"❌ Mot de passe incorrect",a13_title:"🔒 Vérification d'âge 13+",a_name:"Prénom et nom",a_dob:"Date de naissance",a_btn:"✅ Confirmer",a13_err:"⚠️ Âge minimum requis : 13 ans",a13_legal:"En soumettant, je confirme avoir au moins 13 ans.",a18_title:"🔞 Vérification d'âge 18+ (Art nu)",a18_pw:"Mot de passe d'accès",a18_err:"❌ Accès refusé",a18_legal:"⚠️ Cette vérification ne satisfait pas aux exigences légales §4 JuSchG.",back:"← Retour",g_free:"🎨 Galerie Libre",g_premium:"⭐ Galerie Premium",g_age13:"🔒 Galerie 13+",g_age18:"🔞 Galerie 18+",reserved:"RÉSERVÉ",waitlist:"📬 Liste d'attente",original:"🖌️ Original",reproduction:"🖨️ Reproduction",inquire:"📬 Demander",free_view:"✓ Libre d'accès",coming_soon:"✨ Nouvelles œuvres bientôt",thank_you:"✅ Merci ! Confirmation par e-mail.",fill_all:"⚠️ Veuillez remplir tous les champs",wrong_pw:"❌ Mot de passe incorrect",footer_impressum:"Mentions légales"},
+es:{dir:"ltr",subtitle:"Arte en la frontera de dos mundos",nav_gallery:"🗂️ Galería",nav_about:"👤 Sobre mí",nav_contact:"✉️ Contacto",hero_title:"Bienvenido",hero_text:"Entre hormigón prefabricado y píxeles, entre tablero de dibujo y ordenador.",free_badge:"GRATIS",free_title:"Galería Libre",free_desc:"Obras seleccionadas — de acceso gratuito.",free_btn:"🖼️ Entrar",premium_badge:"PREMIUM",premium_title:"Galería Premium",premium_desc:"Obras exclusivas — compra y consulta.",premium_btn:"🔑 Iniciar sesión",pm_title:"🔐 Acceso Premium",pm_hint:"Contraseña bajo petición:",pm_pw:"Contraseña",pm_btn:"🔓 Acceder",pm_err:"❌ Contraseña incorrecta",a13_title:"🔒 Verificación de edad 13+",a_name:"Nombre completo",a_dob:"Fecha de nacimiento",a_btn:"✅ Confirmar",a13_err:"⚠️ Edad mínima requerida: 13 años",a13_legal:"Al enviar confirmo que tengo al menos 13 años.",a18_title:"🔞 Verificación de edad 18+",a18_pw:"Contraseña de acceso",a18_err:"❌ Acceso denegado",a18_legal:"⚠️ Esta verificación no cumple los requisitos legales §4 JuSchG.",back:"← Volver",g_free:"🎨 Galería Libre",g_premium:"⭐ Galería Premium",g_age13:"🔒 Galería 13+",g_age18:"🔞 Galería 18+",reserved:"RESERVADO",waitlist:"📬 Lista de espera",original:"🖌️ Original",reproduction:"🖨️ Reproducción",inquire:"📬 Consultar",free_view:"✓ De acceso libre",coming_soon:"✨ Próximas obras",thank_you:"✅ ¡Gracias! Confirmación por correo.",fill_all:"⚠️ Por favor, rellene todos los campos",wrong_pw:"❌ Contraseña incorrecta",footer_impressum:"Aviso legal"},
+it:{dir:"ltr",subtitle:"Arte al confine tra due mondi",nav_gallery:"🗂️ Galleria",nav_about:"👤 Chi sono",nav_contact:"✉️ Contatto",hero_title:"Benvenuto",hero_text:"Tra cemento prefabbricato e pixel, tra tavolo da disegno e computer.",free_badge:"GRATUITO",free_title:"Galleria Libera",free_desc:"Opere selezionate — liberamente accessibili.",free_btn:"🖼️ Entra",premium_badge:"PREMIUM",premium_title:"Galleria Premium",premium_desc:"Opere esclusive — acquista e richiedi.",premium_btn:"🔑 Accedi",pm_title:"🔐 Accesso Premium",pm_hint:"Password su richiesta:",pm_pw:"Password",pm_btn:"🔓 Accedi",pm_err:"❌ Password errata",a13_title:"🔒 Verifica età 13+",a_name:"Nome e cognome",a_dob:"Data di nascita",a_btn:"✅ Conferma",a13_err:"⚠️ Età minima richiesta: 13 anni",a13_legal:"Inviando confermo di avere almeno 13 anni.",a18_title:"🔞 Verifica età 18+",a18_pw:"Password di accesso",a18_err:"❌ Accesso negato",a18_legal:"⚠️ Questa verifica non soddisfa i requisiti legali §4 JuSchG.",back:"← Indietro",g_free:"🎨 Galleria Libera",g_premium:"⭐ Galleria Premium",g_age13:"🔒 Galleria 13+",g_age18:"🔞 Galleria 18+",reserved:"RISERVATO",waitlist:"📬 Lista d'attesa",original:"🖌️ Originale",reproduction:"🖨️ Riproduzione",inquire:"📬 Richiedi",free_view:"✓ Accesso libero",coming_soon:"✨ Nuove opere in arrivo",thank_you:"✅ Grazie! Conferma via e-mail.",fill_all:"⚠️ Si prega di compilare tutti i campi",wrong_pw:"❌ Password errata",footer_impressum:"Note legali"},
+ar:{dir:"rtl",subtitle:"فن على حدود عالمين",nav_gallery:"🗂️ المعرض",nav_about:"👤 نبذة عني",nav_contact:"✉️ تواصل",hero_title:"مرحباً",hero_text:"بين الخرسانة المسبقة الصنع والبكسل، بين لوح الرسم والحاسوب.",free_badge:"مجاني",free_title:"المعرض المجاني",free_desc:"أعمال مختارة — متاحة للجميع.",free_btn:"🖼️ دخول",premium_badge:"بريميوم",premium_title:"المعرض المميز",premium_desc:"أعمال حصرية — شراء واستفسار.",premium_btn:"🔑 تسجيل الدخول",pm_title:"🔐 الوصول المميز",pm_hint:"كلمة المرور عند الطلب:",pm_pw:"كلمة المرور",pm_btn:"🔓 دخول",pm_err:"❌ كلمة المرور خاطئة",a13_title:"🔒 التحقق من العمر ١٣+",a_name:"الاسم الكامل",a_dob:"تاريخ الميلاد",a_btn:"✅ تأكيد",a13_err:"⚠️ الحد الأدنى للسن المطلوب: ١٣ سنة",a13_legal:"بالإرسال أؤكد أنني لا يقل عمري عن ١٣ سنة.",a18_title:"🔞 التحقق من العمر ١٨+",a18_pw:"كلمة مرور الوصول",a18_err:"❌ تم رفض الوصول",a18_legal:"⚠️ هذا التحقق لا يفي بالمتطلبات القانونية §4 JuSchG.",back:"رجوع →",g_free:"🎨 المعرض المجاني",g_premium:"⭐ المعرض المميز",g_age13:"🔒 معرض ١٣+",g_age18:"🔞 معرض ١٨+",reserved:"محجوز",waitlist:"📬 قائمة الانتظار",original:"🖌️ أصلي",reproduction:"🖨️ طباعة",inquire:"📬 استفسار",free_view:"✓ مجاني للمشاهدة",coming_soon:"✨ أعمال جديدة قريباً",thank_you:"✅ شكراً! تأكيد عبر البريد الإلكتروني.",fill_all:"⚠️ يرجى ملء جميع الحقول",wrong_pw:"❌ كلمة المرور خاطئة",footer_impressum:"إشعار قانوني"},
+bs:{dir:"ltr",subtitle:"Umjetnost na granici dva svijeta",nav_gallery:"🗂️ Galerija",nav_about:"👤 O meni",nav_contact:"✉️ Kontakt",hero_title:"Dobrodošli",hero_text:"Između panelnih zgrada i piksela, između crtaće ploče i računara.",free_badge:"BESPLATNO",free_title:"Slobodna galerija",free_desc:"Odabrana djela — slobodan pristup svima.",free_btn:"🖼️ Ulaz",premium_badge:"PREMIUM",premium_title:"Premium galerija",premium_desc:"Ekskluzivna djela — kupovina i upit.",premium_btn:"🔑 Prijava",pm_title:"🔐 Premium pristup",pm_hint:"Lozinka na zahtjev:",pm_pw:"Lozinka",pm_btn:"🔓 Ulaz",pm_err:"❌ Pogrešna lozinka",a13_title:"🔒 Provjera dobi 13+",a_name:"Ime i prezime",a_dob:"Datum rođenja",a_btn:"✅ Potvrdi",a13_err:"⚠️ Minimalna dob: 13 godina",a13_legal:"Potvrđujem da imam najmanje 13 godina.",a18_title:"🔞 Provjera dobi 18+",a18_pw:"Lozinka za pristup",a18_err:"❌ Pristup odbijen",a18_legal:"⚠️ Ova provjera ne ispunjava zakonske zahtjeve §4 JuSchG.",back:"← Nazad",g_free:"🎨 Slobodna galerija",g_premium:"⭐ Premium galerija",g_age13:"🔒 Galerija 13+",g_age18:"🔞 Galerija 18+",reserved:"REZERVIRANO",waitlist:"📬 Lista čekanja",original:"🖌️ Original",reproduction:"🖨️ Reprodukcija",inquire:"📬 Upit",free_view:"✓ Besplatno",coming_soon:"✨ Nova djela uskoro",thank_you:"✅ Hvala! Potvrda putem e-maila.",fill_all:"⚠️ Molimo popunite sva polja",wrong_pw:"❌ Pogrešna lozinka",footer_impressum:"Impressum"},
+sr:{dir:"ltr",subtitle:"Уметност на граници два света",nav_gallery:"🗂️ Галерија",nav_about:"👤 О мени",nav_contact:"✉️ Контакт",hero_title:"Добродошли",hero_text:"Између панелних зграда и пиксела, између цртаћег стола и рачунара.",free_badge:"БЕСПЛАТНО",free_title:"Слободна галерија",free_desc:"Одабрана дела — слободан приступ свима.",free_btn:"🖼️ Улаз",premium_badge:"ПРЕМИУМ",premium_title:"Премиум галерија",premium_desc:"Ексклузивна дела — куповина и упит.",premium_btn:"🔑 Пријава",pm_title:"🔐 Премиум приступ",pm_hint:"Лозинка на захтев:",pm_pw:"Лозинка",pm_btn:"🔓 Улаз",pm_err:"❌ Погрешна лозинка",a13_title:"🔒 Провера старости 13+",a_name:"Ime i prezime",a_dob:"Датум рођења",a_btn:"✅ Потврди",a13_err:"⚠️ Минималан узраст: 13 година",a13_legal:"Потврђујем да имам најмање 13 година.",a18_title:"🔞 Провера старости 18+",a18_pw:"Лозинка за приступ",a18_err:"❌ Приступ одбијен",a18_legal:"⚠️ Ова провера не испуњава законске захтеве §4 JuSchG.",back:"← Назад",g_free:"🎨 Слободна галерија",g_premium:"⭐ Премиум галерија",g_age13:"🔒 Галерија 13+",g_age18:"🔞 Галерија 18+",reserved:"РЕЗЕРВИСАНО",waitlist:"📬 Листа чекања",original:"🖌️ Оригинал",reproduction:"🖨️ Репродукција",inquire:"📬 Упит",free_view:"✓ Бесплатно",coming_soon:"✨ Нова дела ускоро",thank_you:"✅ Хвала! Потврда путем е-маила.",fill_all:"⚠️ Молимо попуните сва поља",wrong_pw:"❌ Погрешна лозинка",footer_impressum:"Импресум"},
+lt:{dir:"ltr",subtitle:"Menas dviejų pasaulių sandūroje",nav_gallery:"🗂️ Galerija",nav_about:"👤 Apie mane",nav_contact:"✉️ Kontaktai",hero_title:"Sveiki atvykę",hero_text:"Tarp surenkamųjų namų ir pikselių, tarp pieštuko ir kompiuterio.",free_badge:"NEMOKAMA",free_title:"Laisva galerija",free_desc:"Atrinkti darbai — laisvai prieinami visiems.",free_btn:"🖼️ Įeiti",premium_badge:"PREMIUM",premium_title:"Premium galerija",premium_desc:"Išskirtiniai darbai — pirkimas ir užklausos.",premium_btn:"🔑 Prisijungti",pm_title:"🔐 Premium prieiga",pm_hint:"Slaptažodis pagal užklausą:",pm_pw:"Slaptažodis",pm_btn:"🔓 Įeiti",pm_err:"❌ Neteisingas slaptažodis",a13_title:"🔒 Amžiaus patikra 13+",a_name:"Vardas ir pavardė",a_dob:"Gimimo data",a_btn:"✅ Patvirtinti",a13_err:"⚠️ Minimalus reikalingas amžius: 13 metų",a13_legal:"Pateikdamas patvirtinu, kad man yra ne mažiau kaip 13 metų.",a18_title:"🔞 Amžiaus patikra 18+",a18_pw:"Prieigos slaptažodis",a18_err:"❌ Prieiga uždrausta",a18_legal:"⚠️ Ši patikra neatitinka §4 JuSchG teisinių reikalavimų.",back:"← Atgal",g_free:"🎨 Laisva galerija",g_premium:"⭐ Premium galerija",g_age13:"🔒 Galerija 13+",g_age18:"🔞 Galerija 18+",reserved:"REZERVUOTA",waitlist:"📬 Laukiančiųjų sąrašas",original:"🖌️ Originalas",reproduction:"🖨️ Reprodukcija",inquire:"📬 Užklausti",free_view:"✓ Nemokama",coming_soon:"✨ Nauji darbai netrukus",thank_you:"✅ Ačiū! Patvirtinimas el. paštu.",fill_all:"⚠️ Prašome užpildyti visus laukus",wrong_pw:"❌ Neteisingas slaptažodis",footer_impressum:"Teisinis pranešimas"},
+zh:{dir:"ltr",subtitle:"两个世界边界上的艺术",nav_gallery:"🗂️ 画廊",nav_about:"👤 关于我",nav_contact:"✉️ 联系",hero_title:"欢迎",hero_text:"在预制混凝土与像素之间，在绘图板与计算机之间。",free_badge:"免费",free_title:"免费画廊",free_desc:"精选作品——免费向所有人开放。",free_btn:"🖼️ 进入",premium_badge:"高级",premium_title:"高级画廊",premium_desc:"独家作品——购买与咨询。",premium_btn:"🔑 登录",pm_title:"🔐 高级访问",pm_hint:"密码请联系:",pm_pw:"密码",pm_btn:"🔓 进入",pm_err:"❌ 密码错误",a13_title:"🔒 年龄验证 13+",a_name:"姓名",a_dob:"出生日期",a_btn:"✅ 确认",a13_err:"⚠️ 所需最低年龄：13岁",a13_legal:"提交即表示我确认我至少13岁。",a18_title:"🔞 年龄验证 18+",a18_pw:"访问密码",a18_err:"❌ 访问被拒绝",a18_legal:"⚠️ 此验证不满足§4 JuSchG法律要求。",back:"← 返回",g_free:"🎨 免费画廊",g_premium:"⭐ 高级画廊",g_age13:"🔒 13+画廊",g_age18:"🔞 18+画廊",reserved:"已预订",waitlist:"📬 候补名单",original:"🖌️ 原作",reproduction:"🖨️ 复制品",inquire:"📬 咨询",free_view:"✓ 免费观看",coming_soon:"✨ 新作品即将推出",thank_you:"✅ 谢谢！确认邮件已发送。",fill_all:"⚠️ 请填写所有字段",wrong_pw:"❌ 密码错误",footer_impressum:"法律声明"},
+ja:{dir:"ltr",subtitle:"二つの世界の境界線上のアート",nav_gallery:"🗂️ ギャラリー",nav_about:"👤 私について",nav_contact:"✉️ お問い合わせ",hero_title:"ようこそ",hero_text:"プレハブのコンクリートとピクセルの間、製図台とコンピューターの間。",free_badge:"無料",free_title:"フリーギャラリー",free_desc:"精選作品——どなたでも無料でご覧いただけます。",free_btn:"🖼️ 入る",premium_badge:"プレミアム",premium_title:"プレミアムギャラリー",premium_desc:"限定作品——購入とお問い合わせ。",premium_btn:"🔑 ログイン",pm_title:"🔐 プレミアムアクセス",pm_hint:"パスワードはご要望に応じて:",pm_pw:"パスワード",pm_btn:"🔓 アクセス",pm_err:"❌ パスワードが間違っています",a13_title:"🔒 年齢確認 13+",a_name:"氏名",a_dob:"生年月日",a_btn:"✅ 確認",a13_err:"⚠️ 必要な最低年齢：13歳",a13_legal:"送信することで、13歳以上であることを確認します。",a18_title:"🔞 年齢確認 18+",a18_pw:"アクセスパスワード",a18_err:"❌ アクセスが拒否されました",a18_legal:"⚠️ この確認は§4 JuSchGの法的要件を満たしません。",back:"← 戻る",g_free:"🎨 フリーギャラリー",g_premium:"⭐ プレミアムギャラリー",g_age13:"🔒 ギャラリー13+",g_age18:"🔞 ギャラリー18+",reserved:"予約済み",waitlist:"📬 ウェイティングリスト",original:"🖌️ オリジナル",reproduction:"🖨️ 複製",inquire:"📬 お問い合わせ",free_view:"✓ 無料で閲覧",coming_soon:"✨ 新作品が近日公開予定",thank_you:"✅ ありがとうございます！確認メールをお送りします。",fill_all:"⚠️ すべてのフィールドを入力してください",wrong_pw:"❌ パスワードが間違っています",footer_impressum:"法的通知"}
 };
-const CONTACT_EMAIL = 'piegsa+art@gmail.com';
 
-let ARTWORKS = {};
+let currentLang=localStorage.getItem('piegsa_lang')||'de';
+function t(k){return(T[currentLang]&&T[currentLang][k])||T.de[k]||k;}
 
-async function sha256(msg) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+function setLang(lang){
+  if(!T[lang])return;
+  currentLang=lang;
+  localStorage.setItem('piegsa_lang',lang);
+  document.documentElement.lang=lang;
+  document.documentElement.dir=T[lang].dir||'ltr';
+  document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>el.placeholder=t(el.dataset.i18nPh));
+  document.querySelectorAll('.lang-btn').forEach(btn=>btn.classList.toggle('active',btn.textContent===lang.toUpperCase()));
+  ['free','premium','age13','age18'].forEach(s=>{
+    const sec=document.getElementById('section-'+s);
+    if(sec&&sec.classList.contains('active')&&ARTWORKS[s])renderGrid(s,ARTWORKS[s]);
+  });
 }
 
-async function loadArtworks() {
-  try {
-    const r = await fetch('data/artworks.json?v=' + Date.now());
-    ARTWORKS = await r.json();
-  } catch(e) {
-    ARTWORKS = { free:[], premium:[], age13:[], age18:[] };
-  }
-  renderGrid('free', ARTWORKS.free || []);
+/* +13 / +18 sind NICHT auf der Startseite sichtbar.
+   Zugang nur über manuell geteilte Links:
+   https://gallery.jens-piegsa.com/#age13
+   https://gallery.jens-piegsa.com/#age18  */
+function checkHashAccess(){
+  const h=location.hash;
+  if(h==='#age13'||h==='#13'){showModal('modal-age13');history.replaceState(null,'',location.pathname);}
+  if(h==='#age18'||h==='#18'){showModal('modal-age18');history.replaceState(null,'',location.pathname);}
+}
+window.addEventListener('load',checkHashAccess);
+window.addEventListener('hashchange',checkHashAccess);
+
+const HASHES={
+  premium:'7842c2a547a07074b002f75bd7b7810875fe9eeb0aa8c8b5033726911532d311',
+  age18:'a65b903e52d40dcb686114288eed28f2e2a610635b279c96500ca03f4fd56f2e'
+};
+const CONTACT_EMAIL='piegsa+art@gmail.com';
+let ARTWORKS={};
+
+async function sha256(msg){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(msg));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function loadArtworks(){
+  try{const r=await fetch('data/artworks.json?v='+Date.now());ARTWORKS=await r.json();}
+  catch{ARTWORKS={free:[],premium:[],age13:[],age18:[]};}
+  renderGrid('free',ARTWORKS.free||[]);
 }
 loadArtworks();
 
-/* ---- Navigation ---- */
-function showLanding() {
+function showLanding(){
   document.getElementById('landing').style.display='block';
   document.querySelectorAll('.gallery-section').forEach(s=>s.classList.remove('active'));
 }
-function enterSection(name, renderData) {
+function enterSection(name,data){
   document.getElementById('landing').style.display='none';
   document.querySelectorAll('.gallery-section').forEach(s=>s.classList.remove('active'));
   document.getElementById('section-'+name).classList.add('active');
-  if (renderData) renderGrid(name, renderData);
+  if(data)renderGrid(name,data);
 }
-
-/* ---- Modals ---- */
-function showModal(id) { document.getElementById(id).classList.add('active'); }
-function closeModal(id) {
-  document.getElementById(id).classList.remove('active');
-  document.querySelectorAll('#'+id+' .error').forEach(e=>e.style.display='none');
-}
+function showModal(id){document.getElementById(id).classList.add('active');}
+function closeModal(id){document.getElementById(id).classList.remove('active');document.querySelectorAll('#'+id+' .error').forEach(e=>e.style.display='none');}
 document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('active');}));
 
-/* ---- Auth ---- */
-async function checkPremium() {
-  const hash = await sha256(document.getElementById('pw-premium').value);
-  if (hash === HASHES.premium) {
-    sessionStorage.setItem('piegsa_premium','1');
-    closeModal('modal-premium');
-    enterSection('premium', ARTWORKS.premium||[]);
-  } else { document.getElementById('err-premium').style.display='block'; }
+async function checkPremium(){
+  const h=await sha256(document.getElementById('pw-premium').value);
+  if(h===HASHES.premium){sessionStorage.setItem('piegsa_premium','1');closeModal('modal-premium');enterSection('premium',ARTWORKS.premium||[]);}
+  else{const e=document.getElementById('err-premium');e.textContent=t('pm_err');e.style.display='block';}
+}
+function checkAge(minAge){
+  const id='age'+minAge;
+  const name=document.getElementById('name-'+minAge).value.trim();
+  const dob=document.getElementById('dob-'+minAge).value;
+  const err=document.getElementById('err-'+id);
+  if(!name||!dob){err.textContent=t('fill_all');err.style.display='block';return;}
+  const age=(Date.now()-new Date(dob))/(365.25*24*3600*1000);
+  if(age>=minAge){sessionStorage.setItem('piegsa_'+id,'1');closeModal('modal-'+id);enterSection(id,ARTWORKS[id]||[]);}
+  else{err.textContent=t('a13_err').replace('13',minAge);err.style.display='block';}
+}
+async function checkAge18(){
+  const name=document.getElementById('name-18').value.trim();
+  const dob=document.getElementById('dob-18').value;
+  const pw=document.getElementById('pw-18').value;
+  const err=document.getElementById('err-age18');
+  if(!name||!dob){err.textContent=t('fill_all');err.style.display='block';return;}
+  const age=(Date.now()-new Date(dob))/(365.25*24*3600*1000);
+  const h=await sha256(pw);
+  if(age>=18&&h===HASHES.age18){sessionStorage.setItem('piegsa_age18','1');closeModal('modal-age18');enterSection('age18',ARTWORKS.age18||[]);}
+  else{err.textContent=age<18?t('a13_err').replace('13','18'):t('wrong_pw');err.style.display='block';}
 }
 
-function checkAge(minAge) {
-  const id = 'age'+minAge;
-  const name = document.getElementById('name-'+minAge).value.trim();
-  const dob  = document.getElementById('dob-'+minAge).value;
-  const err  = document.getElementById('err-'+id);
-  if (!name||!dob) { err.textContent='Bitte alle Felder ausfüllen · Please fill all fields'; err.style.display='block'; return; }
-  const age = (Date.now()-new Date(dob))/(365.25*24*3600*1000);
-  if (age>=minAge) {
-    sessionStorage.setItem('piegsa_'+id,'1');
-    closeModal('modal-'+id);
-    enterSection(id, ARTWORKS[id]||[]);
-  } else {
-    err.textContent='Mindestalter '+minAge+' Jahre · Minimum age '+minAge;
-    err.style.display='block';
-  }
-}
-
-async function checkAge18() {
-  const name = document.getElementById('name-18').value.trim();
-  const dob  = document.getElementById('dob-18').value;
-  const pw   = document.getElementById('pw-18').value;
-  const err  = document.getElementById('err-age18');
-  if (!name||!dob) { err.textContent='Bitte alle Felder ausfüllen'; err.style.display='block'; return; }
-  const age = (Date.now()-new Date(dob))/(365.25*24*3600*1000);
-  const hash = await sha256(pw);
-  if (age>=18 && hash===HASHES.age18) {
-    sessionStorage.setItem('piegsa_age18','1');
-    closeModal('modal-age18');
-    enterSection('age18', ARTWORKS.age18||[]);
-  } else {
-    err.textContent = age<18 ? 'Mindestalter 18 Jahre · Minimum age 18' : 'Falsches Passwort · Wrong password';
-    err.style.display='block';
-  }
-}
-
-/* ---- Artwork rendering ---- */
-function purchaseBlock(art) {
-  if (art.reserved) {
-    return `<div class="purchase-opts">
-      <span class="btn-reserved">🔖 Reserviert · Reserved</span>
-      <a class="btn-inquire" style="margin-left:.5rem" href="mailto:${CONTACT_EMAIL}?subject=Anfrage: ${encodeURIComponent(art.title)}&body=Ich%20interessiere%20mich%20f%C3%BCr%20%22${encodeURIComponent(art.title)}%22%20und%20m%C3%B6chte%20auf%20die%20Warteliste.">📬 Warteliste</a>
-    </div>`;
-  }
-
-  let html = '<div class="purchase-opts">';
-
-  // Original
-  if (art.type==='original'||art.type==='both') {
-    html += '<div class="opt"><div class="opt-label">Original</div>';
-    if (art.price_original) html += `<span class="price-tag">€ ${art.price_original}</span>`;
-    if (art.inquiry_only || !art.price_original) {
-      html += `<a class="btn-inquire" href="mailto:${CONTACT_EMAIL}?subject=Anfrage Original: ${encodeURIComponent(art.title)}&body=Ich%20interessiere%20mich%20f%C3%BCr%20das%20Original%20von%20%22${encodeURIComponent(art.title)}%22.">📬 Anfragen · Inquire</a>`;
-    } else {
-      html += `<div id="paypal-orig-${art.id}" class="paypal-container" data-amount="${art.price_original}" data-title="${art.title} (Original)"></div>`;
-    }
-    html += '</div>';
-  }
-
-  // Reproduktion / Print
-  if (art.type==='reproduction'||art.type==='both') {
-    html += '<div class="opt"><div class="opt-label">Reproduktion · Print</div>';
-    if (art.price_reproduction) html += `<span class="price-tag">€ ${art.price_reproduction}</span>`;
-    if (art.inquiry_only || !art.price_reproduction) {
-      html += `<a class="btn-inquire" href="mailto:${CONTACT_EMAIL}?subject=Anfrage Reproduktion: ${encodeURIComponent(art.title)}&body=Ich%20interessiere%20mich%20f%C3%BCr%20eine%20Reproduktion%20von%20%22${encodeURIComponent(art.title)}%22.">📬 Anfragen · Inquire</a>`;
-    } else {
-      html += `<div id="paypal-repr-${art.id}" class="paypal-container" data-amount="${art.price_reproduction}" data-title="${art.title} (Reproduktion)"></div>`;
-    }
-    html += '</div>';
-  }
-
-  if (!art.type || (!art.price_original && !art.price_reproduction && !art.inquiry_only)) {
-    html += `<span class="free-tag">✓ Freies Werk · Free to view</span>`;
-  }
-
-  html += '</div>';
+function purchaseBlock(art){
+  if(art.reserved){return`<div class="purchase-opts"><span class="btn-reserved">🔖 ${t('reserved')}</span>&nbsp;<a class="btn-inquire" href="mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(art.title)}">${t('waitlist')}</a></div>`;}
+  let html='<div class="purchase-opts">';
+  const addOpt=(label,price,id,isFree)=>{
+    html+=`<div class="opt"><div class="opt-label">${label}</div>`;
+    if(isFree){html+=`<span class="free-tag">${t('free_view')}</span>`;}
+    else if(price&&!art.inquiry_only){html+=`<span class="price-tag">€ ${price}</span><div id="pp-${id}-${art.id}" class="paypal-container" data-amount="${price}" data-title="${art.title} (${label})"></div>`;}
+    else{html+=`<a class="btn-inquire" href="mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(label+': '+art.title)}">${t('inquire')}</a>`;}
+    html+='</div>';
+  };
+  if(art.type==='original'||art.type==='both')addOpt(t('original'),art.price_original,'orig',false);
+  if(art.type==='reproduction'||art.type==='both')addOpt(t('reproduction'),art.price_reproduction,'repr',false);
+  if(!art.type)html+=`<span class="free-tag">${t('free_view')}</span>`;
+  html+='</div>';
   return html;
 }
-
-function renderGrid(section, artworks) {
-  const grid = document.getElementById('grid-'+section);
-  if (!grid) return;
-  if (!artworks||!artworks.length) {
-    grid.innerHTML='<p style="color:var(--muted);grid-column:1/-1;padding:2rem 0">Neue Werke folgen bald · New works coming soon</p>';
-    return;
-  }
-  grid.innerHTML = artworks.map(art => `
-    <div class="artwork-card${art.reserved?' reserved':''}">
-      ${art.reserved ? '<div class="ribbon-reserved">RESERVIERT</div>' : ''}
-      <div class="artwork-img">
-        ${art.img ? `<img src="${art.img}" alt="${art.title}" loading="lazy" onerror="this.style.display='none'">` : ''}
-      </div>
-      <div class="artwork-info">
-        <h4>${art.title}</h4>
-        <div class="meta">${art.year}${art.medium?' · '+art.medium:''}${art.size?' · '+art.size:''}</div>
-        ${art.desc?`<div class="desc">${art.desc}</div>`:''}
-        ${purchaseBlock(art)}
-      </div>
-    </div>
-  `).join('');
-
-  // Init PayPal buttons
-  setTimeout(() => {
-    document.querySelectorAll('.paypal-container[data-amount]').forEach(el => {
-      if (el.dataset.rendered || !window.paypal) return;
-      el.dataset.rendered = '1';
+function renderGrid(section,artworks){
+  const grid=document.getElementById('grid-'+section);
+  if(!grid)return;
+  if(!artworks||!artworks.length){grid.innerHTML=`<p style="color:var(--muted);grid-column:1/-1;padding:2rem 0;font-style:italic;">${t('coming_soon')}</p>`;return;}
+  grid.innerHTML=artworks.map(art=>{
+    const titleLang=art['title_'+currentLang]||art.title||'';
+    const descLang=art['desc_'+currentLang]||art.desc||'';
+    return`<div class="artwork-card">${art.reserved?`<div class="ribbon-reserved">${t('reserved')}</div>`:''}
+<div class="artwork-img">${art.img?`<img src="${art.img}" alt="${titleLang}" loading="lazy">`:''}</div>
+<div class="artwork-info">
+  <h4>${titleLang}</h4>
+  <div class="meta">${[art.year,art.medium,art.size].filter(Boolean).join(' · ')}</div>
+  ${descLang?`<div class="desc">${descLang}</div>`:''}
+  ${purchaseBlock(art)}
+</div></div>`;
+  }).join('');
+  setTimeout(()=>{
+    document.querySelectorAll('.paypal-container[data-amount]:not([data-rendered])').forEach(el=>{
+      if(!window.paypal)return;
+      el.dataset.rendered='1';
       paypal.Buttons({
-        style:{layout:'horizontal',color:'gold',shape:'rect',label:'buynow',height:32},
-        createOrder:(_,a)=>a.order.create({purchase_units:[{
-          amount:{value:el.dataset.amount,currency_code:'EUR'},
-          description:el.dataset.title+' — Jens Piegsa',
-          payee:{email_address:CONTACT_EMAIL}
-        }]}),
-        onApprove:(_,a)=>a.order.capture().then(()=>{el.innerHTML='<p style="color:#90ee90;margin-top:.5rem;font-size:.85rem">✓ Vielen Dank! Sie erhalten das Werk per E-Mail.</p>';}),
-        onError:e=>console.error(e)
+        style:{layout:'horizontal',color:'gold',shape:'pill',label:'buynow',height:32},
+        createOrder:(_,a)=>a.order.create({purchase_units:[{amount:{value:el.dataset.amount,currency_code:'EUR'},description:el.dataset.title+' — Jens Piegsa',payee:{email_address:CONTACT_EMAIL}}]}),
+        onApprove:(_,a)=>a.order.capture().then(()=>{el.innerHTML=`<p style="color:#90ee90;font-size:.85rem;margin-top:.5rem">${t('thank_you')}</p>`;}),
+        onError:console.error
       }).render(el);
     });
-  }, 500);
+  },500);
 }
+
+setLang(currentLang);
 </script>
 
-<!-- ══════════════════════════════════════════════════════════ -->
 <!-- VIRTUELLE GALERISTIN                                       -->
 <!-- ══════════════════════════════════════════════════════════ -->
 <style>
@@ -564,6 +592,5 @@ setTimeout(() => {
   }
 }, 3000);
 </script>
-
 </body>
 </html>
