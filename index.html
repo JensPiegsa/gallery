@@ -83,7 +83,7 @@ header nav a:hover{color:var(--accent);border-bottom-color:var(--accent)}
 .artwork-card:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:var(--shadow)}
 .ribbon-reserved{position:absolute;top:14px;right:-30px;background:linear-gradient(135deg,#c00,#900);color:#fff;font-size:.62rem;font-weight:700;padding:.2rem 2.5rem;transform:rotate(35deg);letter-spacing:.1em;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.5)}
 [dir="rtl"] .ribbon-reserved{right:auto;left:-30px;transform:rotate(-35deg)}
-.artwork-img{width:100%;aspect-ratio:4/3;background:var(--bg3);overflow:hidden}
+.artwork-img{width:100%;aspect-ratio:4/3;background:var(--bg3);overflow:hidden;position:relative}.artwork-img::after{content:"© Jens Piegsa";position:absolute;bottom:8px;right:10px;color:rgba(200,169,110,.82);font-family:"Playfair Display",Georgia,serif;font-style:italic;font-size:clamp(.58rem,1.3vw,.7rem);text-shadow:0 1px 3px rgba(0,0,0,.95),0 0 8px rgba(0,0,0,.8);pointer-events:none;letter-spacing:.04em;z-index:2;user-select:none;}
 .artwork-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s var(--ease)}
 .artwork-card:hover .artwork-img img{transform:scale(1.04)}
 .artwork-info{padding:1.25rem}
@@ -233,6 +233,7 @@ footer a:hover{opacity:.8}
   </p>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://www.paypal.com/sdk/js?client-id=BAACq76B3Cz_8tZddJ-cTkrfzN4Al5wsFjZLyZYioKxJrlNzOSnHR7IgtZemUqKf61v_z6OU3g3LkVkqqg&currency=EUR" async></script>
 <script>
 const T={
@@ -344,7 +345,7 @@ function purchaseBlock(art){
   const addOpt=(label,price,id,isFree)=>{
     html+=`<div class="opt"><div class="opt-label">${label}</div>`;
     if(isFree){html+=`<span class="free-tag">${t('free_view')}</span>`;}
-    else if(price&&!art.inquiry_only){html+=`<span class="price-tag">€ ${price}</span><div id="pp-${id}-${art.id}" class="paypal-container" data-amount="${price}" data-title="${art.title} (${label})"></div>`;}
+    else if(price&&!art.inquiry_only){html+=`<span class="price-tag">€ ${price}</span><div id="pp-${id}-${art.id}" class="paypal-container" data-amount="${price}" data-title="${art.title} (${label})" data-art-id="${art.id}"></div>`;}
     else{html+=`<a class="btn-inquire" href="mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(label+': '+art.title)}">${t('inquire')}</a>`;}
     html+='</div>';
   };
@@ -377,11 +378,86 @@ function renderGrid(section,artworks){
       paypal.Buttons({
         style:{layout:'horizontal',color:'gold',shape:'pill',label:'buynow',height:32},
         createOrder:(_,a)=>a.order.create({purchase_units:[{amount:{value:el.dataset.amount,currency_code:'EUR'},description:el.dataset.title+' — Jens Piegsa',payee:{email_address:CONTACT_EMAIL}}]}),
-        onApprove:(_,a)=>a.order.capture().then(()=>{el.innerHTML=`<p style="color:#90ee90;font-size:.85rem;margin-top:.5rem">${t('thank_you')}</p>`;}),
+        onApprove:(_,a)=>a.order.capture().then(async(details)=>{el.innerHTML=`<p style="color:#90ee90;font-size:.85rem;margin-top:.5rem">${t('thank_you')}</p>`;const artId=el.dataset.artId;if(artId){const art=Object.values(ARTWORKS).flat().find(x=>x.id===artId);if(art){const p=details.payer||{};const nm=((p.name?.given_name||'')+' '+(p.name?.surname||'')).trim();await generateCertificate(art,nm,p.email_address||'',details.id||String(Date.now()));}}}),
         onError:console.error
       }).render(el);
     });
   },500);
+}
+
+
+/* ══ PDF PURCHASE CERTIFICATE (Item 4) ══════════════════════════════════ */
+async function generateCertificate(art,payerName,payerEmail,orderId){
+  if(typeof window.jspdf==='undefined'){console.warn('jsPDF not loaded');return;}
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a5'});
+  const W=210,H=148;
+  // Cream background
+  doc.setFillColor(253,249,241);doc.rect(0,0,W,H,'F');
+  // Double border
+  doc.setDrawColor(200,169,110);doc.setLineWidth(0.9);doc.rect(7,7,W-14,H-14);
+  doc.setLineWidth(0.3);doc.rect(10,10,W-20,H-20);
+  // Corner ornaments
+  const orn=(x,y)=>{doc.setFontSize(9);doc.setTextColor(200,169,110);doc.text('✦',x,y,{align:'center'});};
+  orn(13,14);orn(W-13,14);orn(13,H-8);orn(W-13,H-8);
+  // Title block
+  doc.setFont('times','bold');doc.setFontSize(18);doc.setTextColor(45,32,12);
+  doc.text('ECHTHEITSZERTIFIKAT',W/2,24,{align:'center'});
+  doc.setFontSize(11);doc.setFont('times','italic');doc.setTextColor(120,90,40);
+  doc.text('Certificate of Authenticity',W/2,31,{align:'center'});
+  // Gold divider
+  doc.setDrawColor(200,169,110);doc.setLineWidth(0.6);doc.line(25,35,W-25,35);
+  doc.setLineWidth(0.2);doc.line(25,36.5,W-25,36.5);
+  // Artwork details
+  const titleLang=art['title_'+currentLang]||art.title||'';
+  const rows=[
+    ['Werk / Artwork:',titleLang+(art.year?' ('+art.year+')':'')],
+    art.medium?['Technik / Medium:',art.medium]:null,
+    art.size?['Maße / Size:',art.size]:null,
+    ['Käufer / Purchaser:',payerName||payerEmail||'—'],
+    ['Datum / Date:',new Date().toLocaleDateString('de-DE',{day:'2-digit',month:'long',year:'numeric'})],
+  ].filter(Boolean);
+  let y=46;
+  rows.forEach(([lbl,val])=>{
+    doc.setFont('times','normal');doc.setFontSize(10);doc.setTextColor(80,60,25);
+    doc.text(lbl,22,y);
+    doc.setFont('times','bold');doc.setTextColor(35,25,8);
+    doc.text(String(val),78,y);
+    y+=9;
+  });
+  // Certificate ID
+  const certId=(orderId||Date.now().toString()).substring(0,20).toUpperCase().replace(/[^A-Z0-9]/g,'');
+  doc.setDrawColor(200,169,110);doc.setLineWidth(0.2);doc.line(25,y+2,W-25,y+2);
+  doc.setFont('times','normal');doc.setFontSize(7.5);doc.setTextColor(140,110,60);
+  doc.text('Zertifikat-Nr. / Certificate No.: '+certId,W/2,y+8,{align:'center'});
+  // Artist signature
+  const sigY=H-30;
+  doc.setDrawColor(160,130,60);doc.setLineWidth(0.4);doc.line(22,sigY,90,sigY);
+  doc.setFont('times','bolditalic');doc.setFontSize(13);doc.setTextColor(45,32,12);
+  doc.text('Jens Piegsa',56,sigY+6,{align:'center'});
+  doc.setFont('times','normal');doc.setFontSize(8.5);doc.setTextColor(100,75,30);
+  doc.text('Künstler / Artist',56,sigY+12,{align:'center'});
+  // Footer
+  doc.setFont('times','italic');doc.setFontSize(8);doc.setTextColor(150,120,60);
+  doc.text('gallery.jens-piegsa.com  ·  piegsa+art@gmail.com',W/2,H-11,{align:'center'});
+  // Download
+  const safe=titleLang.replace(/[^a-zA-Z0-9äöüÄÖÜß]/g,'_').substring(0,40);
+  doc.save('Zertifikat_'+safe+'_'+certId+'.pdf');
+  // Offer email to buyer
+  if(payerEmail){
+    const subj=encodeURIComponent('Kaufbeleg & Zertifikat: '+titleLang);
+    const body=encodeURIComponent(
+      'Sehr geehrte*r '+( payerName||'Käufer*in')+',\n\n'+
+      'herzlichen Dank für Ihren Kauf!\n\n'+
+      'Werk: '+titleLang+(art.year?' ('+art.year+')':'')+
+      (art.medium?'\nTechnik: '+art.medium:'')+
+      (art.size?'\nMaße: '+art.size:'')+
+      '\nZertifikat-Nr.: '+certId+
+      '\n\nIm Anhang (Download) finden Sie das Echtheitszertifikat als PDF.\n\n'+
+      'Mit freundlichen Grüßen\nJens Piegsa\ngallery.jens-piegsa.com'
+    );
+    setTimeout(()=>window.open('mailto:'+payerEmail+'?subject='+subj+'&body='+body),800);
+  }
 }
 
 setLang(currentLang);
