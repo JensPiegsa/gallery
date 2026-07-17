@@ -43,12 +43,18 @@ body{background:var(--bg);color:var(--text);font-family:'Inter','Georgia',serif;
 html[data-theme="light"]{
   --bg:#f6f1e7;--bg2:#efe8d9;--bg3:#e5ddca;
   --accent:#8a6a1e;--accent2:#b8923f;--accent-glow:rgba(138,106,30,.14);
-  --text:#2c2617;--muted:#7a705c;
+  --text:#2c2617;--muted:#6a6150;
   --border:#ded4bd;--border2:#cdc0a3;--card:#fdfaf3;
   --free-bg:#eef4e6;--premium-bg:#f7f0da;
   --shadow:0 8px 40px rgba(90,70,20,.14);
 }
 html[data-theme="light"] #top-bar{background:#efe8d9}
+/* Light-theme contrast fixes (WCAG 2.2 AA — normal text ≥ 4.5:1) */
+html[data-theme="light"] .artwork-info .desc{color:var(--text)}
+html[data-theme="light"] .price-tag{color:#7a5e14}
+html[data-theme="light"] .free-tag{color:#2e6b1a}
+html[data-theme="light"] .free .badge{background:rgba(46,107,26,.12);color:#2e6b1a;border-color:rgba(46,107,26,.35)}
+html[data-theme="light"] .premium .badge{background:rgba(122,94,20,.1);color:#7a5e14;border-color:rgba(122,94,20,.3)}
 
 /* TOP BAR (lang + theme) */
 #top-bar{background:#050505;border-bottom:1px solid var(--border);padding:.5rem 1.5rem;display:flex;gap:.6rem;align-items:center;justify-content:flex-end;transition:background .3s}
@@ -208,6 +214,7 @@ footer a:hover{opacity:.8}
 <!-- LANDING — NUR FREE + PREMIUM öffentlich sichtbar -->
 <div id="landing">
   <div class="hero">
+    <h2 class="sr-only" data-i18n="hero_title"></h2>
     <p data-i18n="hero_text"></p>
   </div>
   <div class="sections">
@@ -218,7 +225,7 @@ footer a:hover{opacity:.8}
       <p id="free-desc" data-i18n="free_desc"></p>
       <span class="enter-btn" data-i18n="free_btn" aria-hidden="true"></span>
     </div>
-    <div class="sc premium" role="button" tabindex="0" aria-labelledby="premium-title premium-desc" onclick="showModal('modal-premium')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showModal('modal-premium')}">
+    <div class="sc premium" role="button" tabindex="0" aria-haspopup="dialog" aria-labelledby="premium-title premium-desc" onclick="showModal('modal-premium')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showModal('modal-premium')}">
       <span class="sc-icon" aria-hidden="true">⭐</span>
       <span class="badge" data-i18n="premium_badge"></span>
       <h3 id="premium-title" data-i18n="premium_title"></h3>
@@ -332,9 +339,18 @@ function buildLangMenu(){
   const menu=document.getElementById('lang-menu');
   menu.innerHTML=LANGS.map(l=>`<button class="lang-item" role="menuitem" lang="${l.c}" data-lang="${l.c}" onclick="setLang('${l.c}');closeLangDD()"><span class="flag" aria-hidden="true">${l.flag}</span><span>${l.name}</span></button>`).join('');
 }
-function toggleLangDD(e){if(e)e.stopPropagation();const dd=document.getElementById('lang-dd');dd.classList.toggle('open');dd.querySelector('.lang-toggle').setAttribute('aria-expanded',dd.classList.contains('open'));}
-function closeLangDD(){const dd=document.getElementById('lang-dd');dd.classList.remove('open');dd.querySelector('.lang-toggle').setAttribute('aria-expanded','false');}
+function toggleLangDD(e){if(e)e.stopPropagation();const dd=document.getElementById('lang-dd');const open=!dd.classList.contains('open');dd.classList.toggle('open',open);dd.querySelector('.lang-toggle').setAttribute('aria-expanded',open);if(open){const items=dd.querySelectorAll('.lang-item');const cur=dd.querySelector('.lang-item[aria-current="true"]')||items[0];if(cur)setTimeout(()=>cur.focus(),30);}}
+function closeLangDD(returnFocus){const dd=document.getElementById('lang-dd');dd.classList.remove('open');dd.querySelector('.lang-toggle').setAttribute('aria-expanded','false');if(returnFocus)dd.querySelector('.lang-toggle').focus();}
 document.addEventListener('click',e=>{if(!e.target.closest('#lang-dd'))closeLangDD();});
+document.getElementById('lang-menu').addEventListener('keydown',e=>{
+  const items=[...document.querySelectorAll('.lang-item')];
+  const i=items.indexOf(document.activeElement);
+  if(e.key==='ArrowDown'){e.preventDefault();items[(i+1)%items.length].focus();}
+  else if(e.key==='ArrowUp'){e.preventDefault();items[(i-1+items.length)%items.length].focus();}
+  else if(e.key==='Home'){e.preventDefault();items[0].focus();}
+  else if(e.key==='End'){e.preventDefault();items[items.length-1].focus();}
+  else if(e.key==='Escape'){e.preventDefault();closeLangDD(true);}
+});
 
 function setLang(lang){
   if(!T[lang])return;
@@ -348,7 +364,7 @@ function setLang(lang){
   document.querySelectorAll('[data-i18n-title]').forEach(el=>el.setAttribute('title',t(el.dataset.i18nTitle)));
   const meta=LANGS.find(l=>l.c===lang);
   if(meta){document.getElementById('lang-cur-flag').textContent=meta.flag;document.getElementById('lang-cur-code').textContent=lang.toUpperCase();}
-  document.querySelectorAll('.lang-item').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
+  document.querySelectorAll('.lang-item').forEach(b=>{const on=b.dataset.lang===lang;b.classList.toggle('active',on);if(on)b.setAttribute('aria-current','true');else b.removeAttribute('aria-current');});
   ['free','premium','age13','age18'].forEach(s=>{
     const sec=document.getElementById('section-'+s);
     if(sec&&sec.classList.contains('active')&&ARTWORKS[s])renderGrid(s,ARTWORKS[s]);
@@ -403,8 +419,11 @@ function showLanding(){
 function enterSection(name,data){
   document.getElementById('landing').style.display='none';
   document.querySelectorAll('.gallery-section').forEach(s=>s.classList.remove('active'));
-  document.getElementById('section-'+name).classList.add('active');
+  const sec=document.getElementById('section-'+name);
+  sec.classList.add('active');
   if(data)renderGrid(name,data);
+  const h=sec.querySelector('h2');
+  if(h){h.setAttribute('tabindex','-1');h.focus();}
 }
 let lastFocused=null;
 function focusable(el){return [...el.querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])')].filter(n=>!n.disabled&&n.offsetParent!==null);}
@@ -614,7 +633,7 @@ setLang(currentLang);
 </style>
 
 <div id="galeristin-widget">
-  <div id="chat-bubble" role="dialog" aria-label="Chat: virtuelle Galeristin Elena">
+  <div id="chat-bubble" role="dialog" aria-label="Chat: virtuelle Galeristin Elena" onkeydown="if(event.key==='Escape'){event.stopPropagation();toggleChat()}">
     <div id="chat-messages" aria-live="polite" aria-atomic="false"></div>
     <div class="chat-options" id="chat-options"></div>
     <div id="chat-input-row">
@@ -660,7 +679,7 @@ setLang(currentLang);
       <circle cx="25" cy="30" r="1.8" fill="#c8a96e"/>
       <circle cx="47" cy="30" r="1.8" fill="#c8a96e"/>
     </svg>
-    <div class="gal-badge" id="chat-notif" style="display:none">1</div>
+    <div class="gal-badge" id="chat-notif" style="display:none" aria-hidden="true">1</div>
   </div>
 </div>
 
@@ -717,6 +736,8 @@ function toggleChat() {
   document.getElementById('galeristin-avatar-wrap').setAttribute('aria-expanded', chatOpen);
   document.getElementById('chat-notif').style.display = 'none';
   if (chatOpen && !chatStarted) { chatStarted = true; initChat(); }
+  if (chatOpen) { setTimeout(() => document.getElementById('chat-user-input').focus(), 50); }
+  else { document.getElementById('galeristin-avatar-wrap').focus(); }
 }
 
 function initChat() {
