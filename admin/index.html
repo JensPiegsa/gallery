@@ -143,9 +143,10 @@ textarea{resize:vertical;min-height:80px}
   </div>
 
   <div class="tabs">
-    <button class="tab active" onclick="showTab('tab-upload')">➕ Werk hinzufügen</button>
-    <button class="tab" onclick="showTab('tab-list')">📋 Alle Werke</button>
-    <button class="tab" onclick="showTab('tab-settings')">⚙️ Einstellungen</button>
+    <button class="tab active" data-panel="tab-upload" onclick="showTab('tab-upload')">➕ Werk hinzufügen</button>
+    <button class="tab" data-panel="tab-list" onclick="showTab('tab-list')">📋 Alle Werke</button>
+    <button class="tab" data-panel="tab-guestbook" onclick="showTab('tab-guestbook')">📖 Gästebuch</button>
+    <button class="tab" data-panel="tab-settings" onclick="showTab('tab-settings')">⚙️ Einstellungen</button>
   </div>
 
   <!-- ─── TAB: UPLOAD ─────────────────────────────────── -->
@@ -269,6 +270,27 @@ textarea{resize:vertical;min-height:80px}
     </div>
   </div>
 
+  <!-- ─── TAB: GÄSTEBUCH ──────────────────────────────── -->
+  <div id="tab-guestbook" class="tab-panel">
+    <div class="form-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem;margin-bottom:1rem">
+        <h2 style="margin-bottom:0;border-bottom:none">📖 Gästebuch</h2>
+        <div style="display:flex;gap:.5rem">
+          <button class="btn btn-secondary btn-sm" onclick="loadGuestbookAdmin()">↺ Aktualisieren</button>
+          <button class="btn btn-primary btn-sm" onclick="addGuestEntry()">＋ Eintrag hinzufügen</button>
+        </div>
+      </div>
+      <p style="font-size:.78rem;color:var(--muted);margin-bottom:0">Einsendungen kommen per E-Mail an. Hier trägst du sie ein, bearbeitest sie und schaltest sie frei. Nur <strong>veröffentlichte</strong> Einträge erscheinen auf der Website.</p>
+    </div>
+    <div id="guestbook-list" class="artwork-list">
+      <p style="color:var(--muted);font-style:italic">Wird geladen …</p>
+    </div>
+    <div style="padding:1rem 0 3rem">
+      <button class="btn btn-primary" onclick="saveGuestbook()">💾 Gästebuch speichern</button>
+      <span id="gb-dirty" style="color:#ffb74d;font-size:.78rem;margin-left:.75rem;display:none">● Ungespeicherte Änderungen</span>
+    </div>
+  </div>
+
   <!-- ─── TAB: EINSTELLUNGEN ──────────────────────────── -->
   <div id="tab-settings" class="tab-panel">
     <div class="form-card">
@@ -341,13 +363,10 @@ function logout(){document.getElementById('login-screen').style.display='block';
 
 /* ══ TABS ═══════════════════════════════════════════ */
 function showTab(id){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.remove('active'));
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  const tabs=document.querySelectorAll('.tab');
-  const map={tab_upload:0,'tab-upload':0,'tab-list':1,'tab-settings':2};
-  const idx={'tab-upload':0,'tab-list':1,'tab-settings':2};
-  tabs[idx[id]||0].classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.panel===id));
+  if(id==='tab-guestbook'&&!gbAdminLoaded)loadGuestbookAdmin();
 }
 
 /* ══ IMAGE HANDLING ══════════════════════════════════ */
@@ -622,6 +641,93 @@ function renderList(){
         <button class="btn btn-danger btn-sm" onclick="deleteArtwork('${a._cat}','${a.id}')">🗑️</button>
       </div>
     </div>`).join('');
+}
+
+/* ══ GÄSTEBUCH ═══════════════════════════════════════ */
+let guestbook=[];
+let guestbookSha=null;
+let gbAdminLoaded=false;
+let gbDirty=false;
+
+function markGbDirty(){gbDirty=true;document.getElementById('gb-dirty').style.display='inline';}
+
+async function loadGuestbookAdmin(){
+  gbAdminLoaded=true;
+  showStatus('⏳ Lade Gästebuch …','#64b5f6');
+  try{
+    const d=await ghGet('data/guestbook.json');
+    if(d&&d.content){guestbook=JSON.parse(atob(d.content.replace(/\n/g,'')));guestbookSha=d.sha;}
+    else{guestbook=[];guestbookSha=null;}
+    if(!Array.isArray(guestbook))guestbook=[];
+    gbDirty=false;document.getElementById('gb-dirty').style.display='none';
+    renderGuestbook();
+    showStatus('✅ Gästebuch geladen ('+guestbook.length+')','#81c784');
+  }catch(e){showStatus('❌ Fehler: '+e.message,'#f44336');}
+}
+
+function gbField(id,key){
+  const el=document.getElementById(id);
+  const entry=guestbook.find(g=>g.id===el.dataset.gid);
+  if(!entry)return;
+  entry[key]=(key==='stars')?(parseInt(el.value)||0):(key==='published')?el.checked:el.value;
+  markGbDirty();
+}
+
+function renderGuestbook(){
+  const c=document.getElementById('guestbook-list');
+  if(!guestbook.length){c.innerHTML='<p style="color:var(--muted);font-style:italic">Noch keine Einträge. Nutze „＋ Eintrag hinzufügen".</p>';return;}
+  c.innerHTML=guestbook.map(g=>`
+    <div class="form-card" style="margin-bottom:1rem;${g.published?'border-left:3px solid var(--green)':'border-left:3px solid var(--border2)'}">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" id="gb-name-${g.id}" data-gid="${g.id}" value="${(g.name||'').replace(/"/g,'&quot;')}" oninput="gbField('gb-name-${g.id}','name')">
+        </div>
+        <div class="form-group">
+          <label>Datum</label>
+          <input type="text" id="gb-date-${g.id}" data-gid="${g.id}" value="${(g.date||'').replace(/"/g,'&quot;')}" placeholder="2026-07-17" oninput="gbField('gb-date-${g.id}','date')">
+        </div>
+        <div class="form-group">
+          <label>Sterne (0–5)</label>
+          <select id="gb-stars-${g.id}" data-gid="${g.id}" onchange="gbField('gb-stars-${g.id}','stars')">
+            ${[0,1,2,3,4,5].map(n=>`<option value="${n}" ${(+g.stars||0)===n?'selected':''}>${n?'★'.repeat(n):'—'}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:.75rem">
+        <label>Nachricht</label>
+        <textarea id="gb-msg-${g.id}" data-gid="${g.id}" rows="3" oninput="gbField('gb-msg-${g.id}','message')">${(g.message||'').replace(/</g,'&lt;')}</textarea>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+        <div class="toggle-row">
+          <label class="toggle"><input type="checkbox" id="gb-pub-${g.id}" data-gid="${g.id}" ${g.published?'checked':''} onchange="gbField('gb-pub-${g.id}','published')"><span class="toggle-slider"></span></label>
+          <span class="toggle-label">${g.published?'✅ Veröffentlicht':'🚫 Versteckt'}</span>
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="deleteGuestEntry('${g.id}')">🗑️ Löschen</button>
+      </div>
+    </div>`).join('');
+}
+
+function addGuestEntry(){
+  const now=new Date();
+  const date=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  guestbook.unshift({id:'gb_'+Date.now(),name:'',message:'',stars:0,date,published:false});
+  markGbDirty();renderGuestbook();
+}
+function deleteGuestEntry(id){
+  if(!confirm('Eintrag wirklich löschen?'))return;
+  guestbook=guestbook.filter(g=>g.id!==id);
+  markGbDirty();renderGuestbook();
+}
+async function saveGuestbook(){
+  showStatus('⏳ Speichere Gästebuch …','#64b5f6');
+  const current=await ghGet('data/guestbook.json');
+  const sha=current?.sha||guestbookSha||null;
+  const newSha=await ghPut('data/guestbook.json',JSON.stringify(guestbook,null,2),'📖 Update guestbook',sha);
+  if(newSha){
+    guestbookSha=newSha;gbDirty=false;document.getElementById('gb-dirty').style.display='none';
+    showStatus('✅ Gästebuch gespeichert','#81c784');
+  }else{showStatus('❌ Fehler beim Speichern','#f44336');}
 }
 
 /* ══ HELPERS ══════════════════════════════════════════ */

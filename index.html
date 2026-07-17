@@ -194,6 +194,42 @@ header nav a:last-child{align-self:center;margin-bottom:.15rem}
 .ls-content li{position:relative;padding-left:1.5rem;margin-bottom:.6rem}
 .ls-content li::before{content:'→';position:absolute;left:0;color:var(--accent)}
 .ls-content a{color:var(--accent);font-weight:600}
+/* KONTAKTFORMULAR */
+.modal.contact{max-width:560px;max-height:88vh;overflow-y:auto;text-align:left}
+[dir="rtl"] .modal.contact{text-align:right}
+.contact-form label{margin-top:.6rem}
+.contact-form select{width:100%;padding:.75rem 1.1rem;background:rgba(255,255,255,.04);border:1px solid var(--border2);color:var(--text);border-radius:var(--radius);font-size:var(--fs-base);margin-bottom:.75rem;font-family:'Inter',sans-serif;cursor:pointer}
+.contact-form select:focus{border-color:var(--accent)}
+.contact-form select option{background:var(--bg2);color:var(--text)}
+.contact-form textarea{width:100%;padding:.75rem 1.1rem;background:rgba(255,255,255,.04);border:1px solid var(--border2);color:var(--text);border-radius:var(--radius);font-size:var(--fs-base);margin-bottom:.75rem;font-family:'Inter',sans-serif;resize:vertical;min-height:96px;line-height:1.6}
+.contact-form textarea:focus{border-color:var(--accent);background:rgba(200,169,110,.04)}
+.cf-hidden{display:none}
+.cf-hint{font-size:var(--fs-xs);color:var(--muted);margin:-.35rem 0 .75rem;line-height:1.5}
+/* Honeypot — für Menschen unsichtbar */
+.cf-honey{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+/* Sterne */
+.stars{display:inline-flex;gap:.15rem;margin-bottom:.75rem}
+.stars button{background:none;border:none;cursor:pointer;font-size:1.6rem;line-height:1;color:var(--border2);padding:.1rem;transition:color .15s,transform .15s}
+.stars button:hover,.stars button.on{color:var(--accent)}
+.stars button:hover{transform:scale(1.15)}
+/* Datenschutz-Zeile */
+.cf-consent{display:flex;align-items:flex-start;gap:.55rem;margin:.5rem 0 1rem;font-size:var(--fs-xs);color:var(--muted);line-height:1.55}
+.cf-consent input{width:auto;margin:.15rem 0 0;flex-shrink:0}
+.cf-consent a{color:var(--accent)}
+.cf-ok{color:#7fc77f;font-size:var(--fs-sm);margin-top:.5rem;display:none;line-height:1.6}
+html[data-theme="light"] .cf-ok{color:#2e6b1a}
+/* Öffentliches Gästebuch im Modal */
+.gb-view{border-top:1px solid var(--border);margin-top:1.5rem;padding-top:1.2rem}
+.gb-toggle{background:none;border:none;color:var(--accent);cursor:pointer;font-size:var(--fs-sm);font-family:'Inter',sans-serif;padding:.2rem 0;letter-spacing:.02em}
+.gb-list{margin-top:1rem;display:none;flex-direction:column;gap:.9rem}
+.gb-list.open{display:flex}
+.gb-entry{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:.85rem 1rem}
+.gb-entry .gb-head{display:flex;justify-content:space-between;align-items:baseline;gap:.75rem;flex-wrap:wrap;margin-bottom:.3rem}
+.gb-entry .gb-name{color:var(--accent);font-weight:600;font-size:var(--fs-sm)}
+.gb-entry .gb-date{color:var(--muted);font-size:var(--fs-xs)}
+.gb-entry .gb-stars{color:var(--accent);font-size:var(--fs-sm);letter-spacing:.05em}
+.gb-entry .gb-msg{color:var(--text);font-size:var(--fs-sm);line-height:1.6;white-space:pre-wrap}
+.gb-empty{color:var(--muted);font-style:italic;font-size:var(--fs-sm)}
 
 /* FOOTER */
 footer{text-align:center;padding:clamp(2rem,5vw,3rem) 2rem;color:var(--muted);font-size:var(--fs-xs);border-top:1px solid var(--border);margin-top:4rem;letter-spacing:.04em}
@@ -225,7 +261,7 @@ footer a:hover{opacity:.8}
   <nav data-i18n-aria="nav_label">
     <a href="#" onclick="showLanding();return false;" data-i18n="nav_gallery"></a>
     <a href="https://info.jens-piegsa.com" data-i18n="nav_about"></a>
-    <a href="mailto:piegsa+art@gmail.com" data-i18n="nav_contact"></a>
+    <a href="#" onclick="showModal('modal-contact');return false;" aria-haspopup="dialog" data-i18n="nav_contact"></a>
     <a href="admin/" style="font-size:.7rem;opacity:.3;letter-spacing:.05em;" data-i18n-aria="admin_label"><span aria-hidden="true">⚙</span></a>
   </nav>
 </header>
@@ -354,6 +390,68 @@ footer a:hover{opacity:.8}
       <h4>Sie wollen eine andere Sprache?</h4>
       <p>Klicken Sie oben rechts auf die Flagge.<br>
          Dann können Sie die Sprache wechseln.</p>
+    </div>
+  </div>
+</div>
+
+<!-- KONTAKTFORMULAR -->
+<div id="modal-contact" class="modal-overlay">
+  <div class="modal contact" role="dialog" aria-modal="true" aria-labelledby="cf-title">
+    <button class="close" onclick="closeModal('modal-contact')" data-i18n-aria="close_label"><span aria-hidden="true">✕</span></button>
+    <h3 id="cf-title">✉️ Kontakt</h3>
+
+    <form class="contact-form" id="contact-form" onsubmit="return sendContact(event)">
+      <!-- Honeypot gegen Spam -->
+      <div class="cf-honey" aria-hidden="true">
+        <label>Bitte leer lassen<input type="text" name="_honey" tabindex="-1" autocomplete="off"></label>
+      </div>
+
+      <label for="cf-name">Name <span aria-hidden="true">*</span> · Name</label>
+      <input type="text" id="cf-name" name="Name" maxlength="80" required autocomplete="name">
+
+      <label for="cf-email">E-Mail <span aria-hidden="true">*</span> · Email</label>
+      <input type="email" id="cf-email" name="E-Mail" maxlength="120" required autocomplete="email">
+
+      <label for="cf-subject">Betreff <span aria-hidden="true">*</span> · Subject</label>
+      <select id="cf-subject" name="Betreff" required onchange="cfSubjectChange()">
+        <option value="Reservierung / Kaufanfrage">🔖 Reservierung / Kaufanfrage · Reservation / purchase</option>
+        <option value="Gästebucheintrag">📖 Gästebucheintrag · Guestbook entry</option>
+        <option value="Bewertung / Feedback">⭐ Bewertung / Feedback · Rating / feedback</option>
+        <option value="Allgemeine Anfrage">✉️ Allgemeine Anfrage · General inquiry</option>
+      </select>
+
+      <!-- bedingt: Werk/Titel bei Reservierung -->
+      <div id="cf-artwork-wrap" class="cf-hidden">
+        <label for="cf-artwork">Werk / Titel · Artwork / title</label>
+        <input type="text" id="cf-artwork" name="Werk" maxlength="120" placeholder="z. B. Ohne Titel #7">
+      </div>
+
+      <!-- bedingt: Sterne bei Gästebuch / Bewertung -->
+      <div id="cf-stars-wrap" class="cf-hidden">
+        <label id="cf-stars-label">Ihre Bewertung · Your rating</label>
+        <div class="stars" role="radiogroup" aria-labelledby="cf-stars-label" id="cf-stars"></div>
+        <input type="hidden" name="Sterne" id="cf-stars-value" value="">
+      </div>
+
+      <p id="cf-gb-hint" class="cf-hint cf-hidden">📖 Gästebuch-Einträge werden erst nach Prüfung durch den Künstler veröffentlicht. Ihr Name und Text sind dann öffentlich sichtbar. · Guestbook entries are published after review; name and text become public.</p>
+
+      <label for="cf-message">Nachricht <span aria-hidden="true">*</span> · Message</label>
+      <textarea id="cf-message" name="Nachricht" maxlength="2000" required></textarea>
+
+      <label class="cf-consent">
+        <input type="checkbox" id="cf-consent" required>
+        <span>Ich habe die <a href="https://info.jens-piegsa.com" target="_blank" rel="noopener">Datenschutzhinweise</a> gelesen und bin mit der Verarbeitung meiner Angaben zur Bearbeitung meiner Anfrage einverstanden. · I agree to the processing of my data.</span>
+      </label>
+
+      <button type="submit" class="btn-primary" id="cf-submit">✉️ Absenden · Send</button>
+      <p class="error" id="cf-err" role="alert" style="display:none"></p>
+      <p class="cf-ok" id="cf-ok">✅ Vielen Dank! Ihre Nachricht wurde gesendet. · Thank you! Your message was sent.</p>
+    </form>
+
+    <!-- Öffentliches Gästebuch -->
+    <div class="gb-view">
+      <button type="button" class="gb-toggle" id="gb-toggle" aria-expanded="false" aria-controls="gb-list" onclick="toggleGuestbook()">📖 Gästebuch ansehen · View guestbook</button>
+      <div class="gb-list" id="gb-list" aria-live="polite"></div>
     </div>
   </div>
 </div>
@@ -665,7 +763,105 @@ async function generateCertificate(art,payerName,payerEmail,orderId){
   }
 }
 
+/* ══ KONTAKTFORMULAR + GÄSTEBUCH ═════════════════════ */
+const FORMSUBMIT_URL='https://formsubmit.co/ajax/'+CONTACT_EMAIL;
+let cfStars=0;
+
+function buildStars(){
+  const box=document.getElementById('cf-stars');
+  if(!box||box.childElementCount)return;
+  for(let i=1;i<=5;i++){
+    const b=document.createElement('button');
+    b.type='button';b.textContent='★';b.dataset.v=i;
+    b.setAttribute('role','radio');b.setAttribute('aria-checked','false');
+    b.setAttribute('aria-label',i+' / 5');
+    b.onclick=()=>setStars(i);
+    b.onkeydown=e=>{if(e.key==='ArrowRight'||e.key==='ArrowUp'){e.preventDefault();setStars(Math.min(5,cfStars+1));document.querySelector('#cf-stars button[data-v="'+cfStars+'"]').focus();}
+      else if(e.key==='ArrowLeft'||e.key==='ArrowDown'){e.preventDefault();setStars(Math.max(1,cfStars-1));document.querySelector('#cf-stars button[data-v="'+cfStars+'"]').focus();}};
+    box.appendChild(b);
+  }
+}
+function setStars(n){
+  cfStars=n;
+  document.getElementById('cf-stars-value').value=n;
+  document.querySelectorAll('#cf-stars button').forEach(b=>{
+    const on=+b.dataset.v<=n;
+    b.classList.toggle('on',on);
+    b.setAttribute('aria-checked',+b.dataset.v===n?'true':'false');
+    b.tabIndex=(+b.dataset.v===n||(n===0&&+b.dataset.v===1))?0:-1;
+  });
+}
+function cfSubjectChange(){
+  const v=document.getElementById('cf-subject').value;
+  const showArt=v==='Reservierung / Kaufanfrage';
+  const showStars=v==='Gästebucheintrag'||v==='Bewertung / Feedback';
+  const showGbHint=v==='Gästebucheintrag';
+  document.getElementById('cf-artwork-wrap').classList.toggle('cf-hidden',!showArt);
+  document.getElementById('cf-stars-wrap').classList.toggle('cf-hidden',!showStars);
+  document.getElementById('cf-gb-hint').classList.toggle('cf-hidden',!showGbHint);
+  if(showStars){buildStars();if(!cfStars)setStars(0);}
+  else{cfStars=0;document.getElementById('cf-stars-value').value='';}
+}
+
+async function sendContact(e){
+  e.preventDefault();
+  const err=document.getElementById('cf-err');
+  const ok=document.getElementById('cf-ok');
+  const btn=document.getElementById('cf-submit');
+  err.style.display='none';
+  if(document.querySelector('.cf-honey input').value){return false;} // Bot
+  const payload={
+    Name:document.getElementById('cf-name').value.trim(),
+    'E-Mail':document.getElementById('cf-email').value.trim(),
+    Betreff:document.getElementById('cf-subject').value,
+    Nachricht:document.getElementById('cf-message').value.trim(),
+    _subject:'[Galerie] '+document.getElementById('cf-subject').value,
+    _template:'table',_captcha:'false'
+  };
+  const art=document.getElementById('cf-artwork');
+  if(!document.getElementById('cf-artwork-wrap').classList.contains('cf-hidden')&&art.value.trim())payload.Werk=art.value.trim();
+  if(!document.getElementById('cf-stars-wrap').classList.contains('cf-hidden')&&cfStars)payload.Sterne=cfStars+' / 5';
+  btn.disabled=true;btn.textContent='⏳ …';
+  try{
+    const r=await fetch(FORMSUBMIT_URL,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(payload)});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    document.getElementById('contact-form').reset();setStars(0);cfSubjectChange();
+    ok.style.display='block';
+    setTimeout(()=>{ok.style.display='none';closeModal('modal-contact');},2600);
+  }catch(ex){
+    const mail='mailto:'+CONTACT_EMAIL+'?subject='+encodeURIComponent(payload._subject)+'&body='+encodeURIComponent(payload.Nachricht);
+    err.innerHTML='❌ Senden fehlgeschlagen. Bitte direkt schreiben: <a href="'+mail+'" style="color:var(--accent)">'+CONTACT_EMAIL+'</a>';
+    err.style.display='block';
+  }finally{btn.disabled=false;btn.textContent='✉️ Absenden · Send';}
+  return false;
+}
+
+let gbLoaded=false;
+function toggleGuestbook(){
+  const list=document.getElementById('gb-list');
+  const tgl=document.getElementById('gb-toggle');
+  const open=!list.classList.contains('open');
+  list.classList.toggle('open',open);
+  tgl.setAttribute('aria-expanded',open);
+  if(open&&!gbLoaded){gbLoaded=true;loadGuestbook();}
+}
+async function loadGuestbook(){
+  const list=document.getElementById('gb-list');
+  list.innerHTML='<p class="gb-empty">…</p>';
+  let entries=[];
+  try{const r=await fetch('data/guestbook.json?v='+Date.now());entries=await r.json();}catch{entries=[];}
+  const pub=(Array.isArray(entries)?entries:[]).filter(x=>x.published);
+  if(!pub.length){list.innerHTML='<p class="gb-empty">Noch keine Einträge. · No entries yet.</p>';return;}
+  const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  list.innerHTML=pub.map(en=>{
+    const stars=en.stars?'<span class="gb-stars" aria-label="'+en.stars+' von 5 Sternen">'+'★'.repeat(Math.max(0,Math.min(5,+en.stars)))+'</span>':'';
+    const date=en.date?esc(en.date):'';
+    return '<div class="gb-entry"><div class="gb-head"><span class="gb-name">'+esc(en.name||'Anonym')+'</span>'+stars+'<span class="gb-date">'+date+'</span></div><div class="gb-msg">'+esc(en.message||'')+'</div></div>';
+  }).join('');
+}
+
 setLang(currentLang);
+cfSubjectChange();
 </script>
 
 <!-- VIRTUELLE GALERISTIN                                       -->
