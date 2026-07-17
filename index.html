@@ -80,6 +80,12 @@ html[data-theme="light"] .premium .badge{background:rgba(122,94,20,.1);color:#7a
 .theme-toggle{width:36px;height:36px;border-radius:50%;border:1px solid var(--border2);background:none;color:var(--accent);cursor:pointer;font-size:1rem;display:inline-flex;align-items:center;justify-content:center;transition:all .25s var(--ease);flex-shrink:0}
 .theme-toggle:hover{border-color:var(--accent);background:var(--accent-glow);transform:rotate(20deg)}
 
+/* LEICHTE SPRACHE BUTTON */
+.ls-btn{display:inline-flex;align-items:center;gap:.4rem;background:none;border:1px solid var(--border2);color:var(--muted);border-radius:99px;padding:.3rem .8rem;font-size:.78rem;cursor:pointer;letter-spacing:.03em;font-family:'Inter',sans-serif;font-weight:500;transition:all .2s var(--ease)}
+.ls-btn:hover{border-color:var(--accent);color:var(--accent)}
+.ls-btn .ls-icon{font-size:.95rem;line-height:1;letter-spacing:-.05em}
+@media(max-width:560px){.ls-btn .ls-label{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}}
+
 /* WATERCOLOR BACKGROUNDS on section cards */
 .sc.free::before,.sc.premium::before{content:'';position:absolute;inset:0;background-size:cover;background-position:center;opacity:.5;mix-blend-mode:multiply;pointer-events:none;z-index:0}
 html[data-theme="light"] .sc.free::before,html[data-theme="light"] .sc.premium::before{opacity:.4}
@@ -89,9 +95,9 @@ html[data-theme="light"] .sc.free::before,html[data-theme="light"] .sc.premium::
 
 /* DONATE */
 .donate-wrap{text-align:center;padding:clamp(1.5rem,4vw,3rem) 1.5rem clamp(2rem,5vw,3.5rem)}
-.donate-btn{display:inline-flex;align-items:center;gap:.6rem;padding:1rem 2.4rem;background:linear-gradient(135deg,#0070ba,#003087);color:#fff;border:none;border-radius:99px;font-size:clamp(1rem,2.5vw,1.2rem);font-weight:600;letter-spacing:.03em;text-decoration:none;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 8px 28px rgba(0,112,186,.35);transition:transform .25s var(--ease),box-shadow .25s,filter .25s}
+.donate-btn{display:inline-flex;align-items:center;gap:.55rem;padding:1rem 2.4rem 1rem 1.9rem;background:linear-gradient(135deg,#0070ba,#003087);color:#fff;border:none;border-radius:99px;font-size:clamp(1rem,2.5vw,1.2rem);font-weight:600;letter-spacing:.03em;text-decoration:none;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 8px 28px rgba(0,112,186,.35);transition:transform .25s var(--ease),box-shadow .25s,filter .25s}
 .donate-btn:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 14px 40px rgba(0,112,186,.5);filter:brightness(1.08)}
-.donate-btn .pp-icon{font-size:1.3rem}
+.donate-btn .pp-icon{font-size:1.3rem;line-height:1}
 
 /* HEADER */
 header{border-bottom:1px solid var(--border);padding:clamp(1.5rem,4vw,2.5rem) 2rem;text-align:center;background:var(--bg2);position:relative}
@@ -176,6 +182,16 @@ header nav a:hover{color:var(--accent);border-bottom-color:var(--accent)}
 .modal .error{color:#ff6b6b;font-size:var(--fs-xs);margin-top:.5rem;display:none}
 .modal .legal-note{font-size:var(--fs-xs);color:var(--muted);margin-top:1rem;line-height:1.6;border-top:1px solid var(--border);padding-top:1rem}
 .modal .hint-link{color:var(--accent)}
+/* LEICHTE SPRACHE PANEL */
+.modal.ls{max-width:600px;max-height:85vh;overflow-y:auto;text-align:left}
+[dir="rtl"] .modal.ls{text-align:right}
+.ls-content{color:var(--text);font-size:1.08rem;line-height:1.9}
+.ls-content p{margin-bottom:1rem}
+.ls-content h4{font-family:'Inter',sans-serif;color:var(--accent);font-size:1.05rem;font-weight:600;margin:1.4rem 0 .5rem}
+.ls-content ul{list-style:none;margin:0 0 1rem}
+.ls-content li{position:relative;padding-left:1.5rem;margin-bottom:.6rem}
+.ls-content li::before{content:'→';position:absolute;left:0;color:var(--accent)}
+.ls-content a{color:var(--accent);font-weight:600}
 
 /* FOOTER */
 footer{text-align:center;padding:clamp(2rem,5vw,3rem) 2rem;color:var(--muted);font-size:var(--fs-xs);border-top:1px solid var(--border);margin-top:4rem;letter-spacing:.04em}
@@ -194,6 +210,9 @@ footer a:hover{opacity:.8}
     </button>
     <div class="lang-menu" id="lang-menu" role="menu" data-i18n-aria="lang_label"></div>
   </div>
+  <button id="ls-toggle" class="ls-btn" lang="de" onclick="showModal('modal-ls')" aria-haspopup="dialog" aria-label="Erklärung in Leichter Sprache">
+    <span class="ls-icon" aria-hidden="true">🄻🄴</span><span class="ls-label">Leichte&nbsp;Sprache</span>
+  </button>
   <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()" data-i18n-aria="theme_label" data-i18n-title="theme_label" aria-pressed="false">🌙</button>
 </div>
 
@@ -235,7 +254,7 @@ footer a:hover{opacity:.8}
   </div>
   <div class="donate-wrap">
     <a class="donate-btn" href="https://www.paypal.com/donate?business=piegsa%40gmail.com&currency_code=EUR" target="_blank" rel="noopener">
-      <span class="pp-icon" aria-hidden="true">💛</span><span data-i18n="donate"></span>
+      <span class="pp-icon" aria-hidden="true">🩷</span><span data-i18n="donate"></span>
     </a>
   </div>
 </div>
@@ -291,6 +310,49 @@ footer a:hover{opacity:.8}
     <button class="btn-primary" onclick="checkAge18()" data-i18n="a_btn"></button>
     <p class="error" id="err-age18" role="alert"></p>
     <div class="legal-note" data-i18n="a18_legal"></div>
+  </div>
+</div>
+
+<!-- LEICHTE SPRACHE -->
+<div id="modal-ls" class="modal-overlay">
+  <div class="modal ls" role="dialog" aria-modal="true" aria-labelledby="ls-title" lang="de">
+    <button class="close" onclick="closeModal('modal-ls')" aria-label="Schließen"><span aria-hidden="true">✕</span></button>
+    <h3 id="ls-title">Leichte Sprache</h3>
+    <div class="ls-content">
+      <p>Herzlich willkommen!</p>
+      <p>Das ist die Kunst-Seite von <strong>Jens Piegsa</strong>.<br>
+         Jens Piegsa malt und zeichnet Bilder.</p>
+
+      <h4>Das können Sie hier tun:</h4>
+      <ul>
+        <li>Bilder ansehen. Das kostet nichts.</li>
+        <li>Bilder kaufen.</li>
+        <li>Geld spenden. Damit helfen Sie dem Künstler.</li>
+        <li>Eine Nachricht schreiben.</li>
+      </ul>
+
+      <h4>Es gibt 2 Bereiche:</h4>
+      <ul>
+        <li><strong>Freie Galerie:</strong> Diese Bilder sind für alle. Sie kosten nichts.</li>
+        <li><strong>Premium-Galerie:</strong> Diese Bilder kann man kaufen. Dafür brauchen Sie ein Passwort.</li>
+      </ul>
+
+      <h4>So kaufen Sie ein Bild:</h4>
+      <ul>
+        <li>Klicken Sie auf ein Bild.</li>
+        <li>Klicken Sie auf den PayPal-Knopf.</li>
+        <li>Sie bezahlen sicher mit PayPal.</li>
+        <li>Danach bekommen Sie eine Urkunde für das Bild.</li>
+      </ul>
+
+      <h4>Sie haben eine Frage?</h4>
+      <p>Schreiben Sie eine E-Mail an:<br>
+         <a href="mailto:piegsa+art@gmail.com">piegsa+art@gmail.com</a></p>
+
+      <h4>Sie wollen eine andere Sprache?</h4>
+      <p>Klicken Sie oben rechts auf die Flagge.<br>
+         Dann können Sie die Sprache wechseln.</p>
+    </div>
   </div>
 </div>
 
